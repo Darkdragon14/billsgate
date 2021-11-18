@@ -4,6 +4,10 @@
   "description": "An admin for your personnal bills",
   "main": "app.js",
   "scripts": {
+    "dev": "nodemon app.js",
+    "init": "npx sequelize-cli db:create && npx sequelize-cli db:migrate",
+    "migrate": "npm npx sequelize-cli db:migrate",
+    "reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,11 +18,12 @@
   "author": "Sinoquet Tristan",
   "license": "ISC",
   "dependencies": {
-    "mysql": "^2.18.1",
+    "express": "^4.17.1",
     "mysql2": "^2.3.3",
     "sequelize": "^6.9.0"
   },
   "devDependencies": {
+    "nodemon": "^2.0.15",
     "sequelize-cli": "^6.3.0"
   }
 }

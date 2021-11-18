@@ -10,7 +10,8 @@ module.exports = {
       },
       username: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       firstname: {
         type: Sequelize.STRING
@@ -22,9 +23,10 @@ module.exports = {
         type: Sequelize.STRING,
         validate: {
           isEmail: true
-        }
+        },
+        unique: true
       },
-      sexe: {
+      gender: {
         type: Sequelize.STRING
       },
       external: {

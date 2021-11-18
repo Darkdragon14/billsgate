@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "express-jsdoc-swagger": "^1.6.7",
     "mysql2": "^2.3.3",
     "sequelize": "^6.9.0"
   },

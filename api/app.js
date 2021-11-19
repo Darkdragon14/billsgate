@@ -34,11 +34,12 @@ expressJSDocSwagger(app)(options);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Create a catch-all route for testing the installation.
 app.use('/user', require('./src/user'));
+app.use('/bank', require('./src/bank'));
 
 const port = 8000;
 
 app.listen(port, () => {
-  console.log('App is now running at port ', port)
+  console.log('App is now running at port ', port);
+  console.log(`The doc is available on http://localhost:${port}/api-docs`);
 })

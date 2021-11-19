@@ -8,10 +8,10 @@ const router = require('express').Router();
  * An user
  * @typedef {object} user
  * @property {integer} id
- * @property {string} username
+ * @property {string} username.required
  * @property {string} firstname
  * @property {string} lastname
- * @property {string} email
+ * @property {string} email.required
  * @property {string} gender
  * @property {boolean} external
  * @property {string} createdAt
@@ -20,7 +20,7 @@ const router = require('express').Router();
 
 /**
  * User's info that we can modified
- * @typedef {object} userToModified
+ * @typedef {object} userModified
  * @property {string} username
  * @property {string} firstname
  * @property {string} lastname
@@ -86,7 +86,7 @@ router.get('/:id', async (req, res) => {
  * POST /user
  * @summary Create a new user 
  * @tags user
- * @param {integer} userId.path - The user's is 
+ * @param {user} request.body.require
  * @return {createUser} 201 - success response - application/json
  * @return {error} 409 - The email or the username are already used - application/json
  * @return {error} 500 - The server failed - application/json
@@ -109,7 +109,7 @@ router.post("/", async (req, res) => {
  * @summary Update a specific user
  * @tags user
  * @param {integer} userId.path - The user's id 
- * @param {userToModified} request.body.required - The new username of this user
+ * @param {userModified} request.body.required - The new username of this user
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
@@ -128,7 +128,7 @@ router.patch("/:id", async (req, res) => {
 * @summary Delete a specific user
 * @tags user
 * @param {integer} userId.path - The user's is 
-* @return {user} 204 - success response - application/json
+* @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
 router.delete("/:id", async (req, res) => {

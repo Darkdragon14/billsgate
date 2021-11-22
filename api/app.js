@@ -36,6 +36,7 @@ app.use(express.json());
 
 app.use('/user', require('./src/user'));
 app.use('/bank', require('./src/bank'));
+app.use('/invoice', require('./src/invoice'));
 
 const port = 8000;
 

@@ -5,8 +5,8 @@ const { bank, user } = model;
 const router = require('express').Router();
 
 /**
- * A bank
- * @typedef {object} bank
+ * All information for a bank
+ * @typedef {object} bankAnswer
  * @property {integer} id
  * @property {string} name
  * @property {integer} userId
@@ -19,8 +19,8 @@ const router = require('express').Router();
  */
 
 /**
- * Body to modify a bank
- * @typedef {object} bankModified
+ * A bank
+ * @typedef {object} bank
  * @property {string} name
  * @property {string} amount
  * @property {string} iban
@@ -52,7 +52,7 @@ const router = require('express').Router();
  * @summary Return all bank of one user
  * @tags bank
  * @param {integer} userId.query.required - The user's id 
- * @return {array<bank>} 200 - success response - application/json
+ * @return {array<bankAnswer>} 200 - success response - application/json
  * @return {error} 404 - Any bank was find for this user - application/json
  * @return {error} 500 - The server failed - application/json
  */
@@ -78,7 +78,7 @@ const router = require('express').Router();
  * @summary Return a specific bank
  * @tags bank
  * @param {integer} bankId.path - The bank's id
- * @return {bank} 200 - success response - application/json
+ * @return {bankAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
@@ -104,7 +104,7 @@ const router = require('express').Router();
  * @return {createBank} 201 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
- router.post("/", async (req, res) => {
+ router.post('/', async (req, res) => {
   try {
     const newBank = await bank.create({...req.body});
     res.status(201).send({id: newBank.dataValues.id, message: 'bank created successfully'});
@@ -119,11 +119,11 @@ const router = require('express').Router();
  * @summary Update a specific bank
  * @tags bank
  * @param {integer} bankId.path - The bank's id 
- * @param {bankModified} request.body.required
+ * @param {bank} request.body.required
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
- router.patch("/:id", async (req, res) => {
+ router.patch('/:id', async (req, res) => {
   try {
     await user.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
@@ -143,7 +143,7 @@ const router = require('express').Router();
 * @return {error} 400 - TMiss the userId - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     if(req.body.userId){
       await bank.destroy({

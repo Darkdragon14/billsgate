@@ -5,13 +5,13 @@ const { user } = model;
 const router = require('express').Router();
 
 /**
- * An user
- * @typedef {object} user
+ * All information for an user
+ * @typedef {object} userAnswer
  * @property {integer} id
- * @property {string} username.required
+ * @property {string} username
  * @property {string} firstname
  * @property {string} lastname
- * @property {string} email.required
+ * @property {string} email
  * @property {string} gender
  * @property {boolean} external
  * @property {string} createdAt
@@ -19,8 +19,8 @@ const router = require('express').Router();
  */
 
 /**
- * User's info that we can modified
- * @typedef {object} userModified
+ * An user
+ * @typedef {object} user
  * @property {string} username
  * @property {string} firstname
  * @property {string} lastname
@@ -46,7 +46,7 @@ const router = require('express').Router();
  * GET /user/all
  * @summary Return all users
  * @tags user
- * @return {array<user>} 200 - success response - application/json
+ * @return {array<userAnswer>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
 router.get('/all', async (req, res) => {
@@ -64,7 +64,7 @@ router.get('/all', async (req, res) => {
  * @summary Return a specific user
  * @tags user
  * @param {integer} userId.path - The user's is 
- * @return {user} 200 - success response - application/json
+ * @return {userAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
@@ -91,7 +91,7 @@ router.get('/:id', async (req, res) => {
  * @return {error} 409 - The email or the username are already used - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const newUser = await user.create({...req.body});
     res.status(201).send({id: newUser.dataValues.id, message: 'Account created successfully'});
@@ -109,11 +109,11 @@ router.post("/", async (req, res) => {
  * @summary Update a specific user
  * @tags user
  * @param {integer} userId.path - The user's id 
- * @param {userModified} request.body.required - The new username of this user
+ * @param {user} request.body.required - The new username of this user
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.patch("/:id", async (req, res) => {
+router.patch('/:id', async (req, res) => {
   try {
     await user.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
@@ -131,7 +131,7 @@ router.patch("/:id", async (req, res) => {
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await user.destroy({where: {id: req.params.id}});
     res.sendStatus(204);

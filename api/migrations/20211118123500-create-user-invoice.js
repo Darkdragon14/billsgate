@@ -19,6 +19,7 @@ module.exports = {
       invoiceId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        onDelete: 'CASCADE',
         references: {
           model: 'invoices',
           key: 'id'

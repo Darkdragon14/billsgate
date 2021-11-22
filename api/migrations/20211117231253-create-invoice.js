@@ -24,7 +24,7 @@ module.exports = {
       pathToAttachedFile: {
         type: Sequelize.STRING
       },
-      compagnieId: {
+      companyId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'compagnies',

@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       compagny.hasMany(models.invoice, {
         foreignKey: 'compagnyId'
       });
+      compagny.hasMany(models.bank, {
+        foreignKey: 'compagnyId'
+      });
     }
   };
   compagny.init({

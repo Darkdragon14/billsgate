@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         onDelete: 'CASCADE'
       });
+      bank.belongsTo(models.company, {
+        foreignKey: 'companyId',
+        onDelete: 'CASCADE'
+      });
       bank.hasMany(models.transaction, {
         foreignKey: 'bankToId'
       });

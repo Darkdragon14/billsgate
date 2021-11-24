@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     invoiceId: DataTypes.INTEGER,
     weight: DataTypes.FLOAT,
-    isPayer: DataTypes.BOOLEAN
+    isPayer: DataTypes.BOOLEAN,
+    dueDate: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'userInvoice',

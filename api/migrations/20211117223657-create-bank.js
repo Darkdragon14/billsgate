@@ -14,10 +14,26 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         onDelete: 'CASCADE',
+        validate: {
+          customValidator(value) {
+            if (value && this.companyId){
+              throw new Error('We can\'t have an user and an company in the same times');
+            } else if (!value && !this.companyId) {
+              throw new Error('We need an user or a company');
+            }
+          }
+        },
         references: {
           model: 'users',
+          key: 'id'
+        }
+      },
+      companyId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'compagnies',
           key: 'id'
         }
       },

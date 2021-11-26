@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const { now } = require('sequelize/types/lib/utils');
 const model = require('../models');
 const { user, bank, invoice, userInvoice } = model;
 
@@ -68,13 +69,13 @@ const router = require('express').Router();
  */
 router.get('/all', async (req, res) => {
   try {
-    const users = await user.findAll({
+    const invoices = await invoice.findAll({
       include: userInvoice,
       where: {
         userId: req.params.userId
       }
     });
-    res.status(200).send(users);
+    res.status(200).send(invoices);
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -129,7 +130,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PATCH /invoice/{invoiceId}
+ * PUT /invoice/{invoiceId}
  * @summary Update a specific invoice
  * @tags invoice
  * @param {integer} invoiceId.path - The invoice's id 
@@ -137,15 +138,67 @@ router.post('/', async (req, res) => {
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-    await user.update({...req.body}, {where: {id: req.params.id}});
+    if (req.body.invoice) {
+      await invoice.update({...req.body.invoice}, {where: {id: req.params.id}});
+    }
+    if (req.body.listLinkUserInvoice && req.body.listLinkUserInvoice.length > 0) {
+      for (const linkInvoiceUser of req.body.listLinkUserInvoice) {
+        linkInvoiceUser.invoiceId = newInvoice.dataValues.id;
+        await userInvoice.update({...linkInvoiceUser}, {where: {invoiceId: req.params.id}});
+      }
+    }
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
   }
-})
+});
+
+/**
+ * PATCH /invoice/{invoiceId}/{userId}
+ * @summary The user paid it's part
+ * @tags invoice
+ * @param {integer} invoiceId.path - The invoice's id 
+ * @param {integer} userId.path - The invoice's id 
+ * @param {invoice} request.body.required
+ * @return 204 - success response
+ * @return {error} 500 - The server failed - application/json
+ */
+ router.patch('/:invoiceId/:userId', async (req, res) => {
+  try {
+    await userInvoice.update(
+      {
+        dueDate: now()
+      }, 
+      {
+        where: {
+          [Op.and]: {
+            invoiceId: req.params.invoiceId,
+            userId: req.params.userId
+          }
+        }
+      }
+    );
+    const isPayer = await userInvoice.findOne({
+      where: {
+        [Op.and]: {
+          invoiceId: req.params.invoiceId,
+          userId: req.params.userId,
+          isPayer: true
+        }
+      }
+    })
+    if (isPayer) {
+      await invoice.update({...req.body.invoice}, {where: {id: req.params.invoiceId}});
+    }
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
+  }
+});
 
 /**
 * DELETE /invoice/{invoiceId}

@@ -104,7 +104,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PATCH /company/{companyId}
+ * PUT /company/{companyId}
  * @summary Update a specific company
  * @tags company
  * @param {integer} companyId.path - The company's id 
@@ -112,7 +112,7 @@ router.post('/', async (req, res) => {
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     await company.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);

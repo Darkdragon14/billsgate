@@ -115,7 +115,7 @@ const router = require('express').Router();
 });
 
 /**
- * PATCH /bank/{bankId}
+ * PUT /bank/{bankId}
  * @summary Update a specific bank
  * @tags bank
  * @param {integer} bankId.path - The bank's id 
@@ -123,7 +123,7 @@ const router = require('express').Router();
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
- router.patch('/:id', async (req, res) => {
+ router.put('/:id', async (req, res) => {
   try {
     await user.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);

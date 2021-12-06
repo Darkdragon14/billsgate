@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { now } = require('sequelize/types/lib/utils');
+const { now } = require('sequelize/lib/utils');
 const model = require('../models');
 const { user, bank, invoice, userInvoice } = model;
 
@@ -14,7 +14,7 @@ const router = require('express').Router();
  * @property {string} payementDate
  * @property {string} dueDate
  * @property {string} pathToAttachedFile
- * @property {integer} compagnieId
+ * @property {integer} companyId
  * @property {string} createdAt
  * @property {string} updatedAt
  */
@@ -27,7 +27,7 @@ const router = require('express').Router();
  * @property {string} payementDate
  * @property {string} dueDate
  * @property {string} pathToAttachedFile
- * @property {integer} compagnieId
+ * @property {integer} companyId
  */
 
 /**
@@ -70,10 +70,12 @@ const router = require('express').Router();
 router.get('/all', async (req, res) => {
   try {
     const invoices = await invoice.findAll({
-      include: userInvoice,
-      where: {
-        userId: req.params.userId
-      }
+      include: [{
+        model: userInvoice,
+        where: {
+          userId: req.query.userId
+        }
+      }] 
     });
     res.status(200).send(invoices);
   } catch (error) {
@@ -86,7 +88,7 @@ router.get('/all', async (req, res) => {
  * GET /invoice/{invoiceId}
  * @summary Return a specific invoice
  * @tags invoice
- * @param {integer} invoiceId.path - The invoice's id
+ * @param {integer} invoiceId.path.required - The invoice's id
  * @return {invoiceAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
@@ -133,7 +135,7 @@ router.post('/', async (req, res) => {
  * PUT /invoice/{invoiceId}
  * @summary Update a specific invoice
  * @tags invoice
- * @param {integer} invoiceId.path - The invoice's id 
+ * @param {integer} invoiceId.path.required - The invoice's id 
  * @param {invoice} request.body.required
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -160,8 +162,8 @@ router.put('/:id', async (req, res) => {
  * PATCH /invoice/{invoiceId}/{userId}
  * @summary The user paid it's part
  * @tags invoice
- * @param {integer} invoiceId.path - The invoice's id 
- * @param {integer} userId.path - The invoice's id 
+ * @param {integer} invoiceId.path.required - The invoice's id 
+ * @param {integer} userId.path.required - The user's'invoice's id 
  * @param {invoice} request.body.required
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -204,7 +206,7 @@ router.put('/:id', async (req, res) => {
 * DELETE /invoice/{invoiceId}
 * @summary Delete a specific invoice
 * @tags invoice
-* @param {integer} invoiceId.path - The invoice's id
+* @param {integer} invoiceId.path.required - The invoice's id
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */

@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       invoice.belongsTo(models.company, {
-        foreignKey: 'compagnyId'
+        foreignKey: 'companyId'
       });
       invoice.hasMany(models.transaction, {
         foreignKey: 'invoiceId'
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     payementDate: DataTypes.DATE,
     dueDate: DataTypes.DATE,
     pathToAttachedFile: DataTypes.STRING,
-    compagnieId: DataTypes.INTEGER
+    companyId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'invoice',

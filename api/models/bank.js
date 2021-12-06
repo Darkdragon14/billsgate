@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
   bank.init({
     name: DataTypes.STRING,
     userId: DataTypes.INTEGER,
+    companyId: DataTypes.INTEGER,
     amount: DataTypes.FLOAT,
     iban: DataTypes.STRING,
     bic: DataTypes.STRING,

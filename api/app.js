@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors')
 const expressJSDocSwagger = require('express-jsdoc-swagger');
 
 const options = {
@@ -33,6 +34,7 @@ expressJSDocSwagger(app)(options);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors({}));
 
 app.use('/user', require('./src/user'));
 app.use('/bank', require('./src/bank'));

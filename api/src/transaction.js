@@ -67,7 +67,7 @@ router.get('/all', async (req, res) => {
  * GET /user/{userId}
  * @summary Return a specific user
  * @tags transaction
- * @param {integer} userId.path - The user's is 
+ * @param {integer} userId.path.required - The user's is 
  * @return {userAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
@@ -109,7 +109,7 @@ router.post('/', async (req, res) => {
  * PUT /transaction/{transactionId}
  * @summary Update a specific transaction
  * @tags transaction
- * @param {integer} transactionId.path - The transaction's id 
+ * @param {integer} transactionId.path.required - The transaction's id 
  * @param {transaction} request.body.required - The new transaction of this transaction
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -128,7 +128,7 @@ router.put('/:id', async (req, res) => {
 * DELETE /transaction/{transactionId}
 * @summary Delete a specific transaction
 * @tags transaction
-* @param {integer} transactionId.path - The transaction's is 
+* @param {integer} transactionId.path.required - The transaction's is 
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */

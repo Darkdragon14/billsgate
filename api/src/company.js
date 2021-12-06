@@ -5,7 +5,7 @@ const router = require('express').Router();
 
 /**
  * All information for a company
- * @typedef {object} userAnswer
+ * @typedef {object} companyAnswer
  * @property {integer} id
  * @property {string} name
  * @property {string} address
@@ -19,7 +19,7 @@ const router = require('express').Router();
 
 /**
  * A company
- * @typedef {object} user
+ * @typedef {object} company
  * @property {string} name
  * @property {string} address
  * @property {string} city
@@ -43,7 +43,7 @@ const router = require('express').Router();
 
 /**
  * GET /company/all
- * @summary Return all compagnies
+ * @summary Return all companies
  * @tags company
  * @return {array<company>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
@@ -62,8 +62,8 @@ router.get('/all', async (req, res) => {
  * GET /company/{companyId}
  * @summary Return a specific company
  * @tags company
- * @param {integer} companyId.path - The company's is 
- * @return {conpanyAnswer} 200 - success response - application/json
+ * @param {integer} companyId.path.required - The company's is 
+ * @return {companyAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
@@ -107,7 +107,7 @@ router.post('/', async (req, res) => {
  * PUT /company/{companyId}
  * @summary Update a specific company
  * @tags company
- * @param {integer} companyId.path - The company's id 
+ * @param {integer} companyId.path.required - The company's id 
  * @param {company} request.body.required - The new company
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -126,7 +126,7 @@ router.put('/:id', async (req, res) => {
 * DELETE /company/{companyId}
 * @summary Delete a specific company
 * @tags company
-* @param {integer} companyId.path - The company's id
+* @param {integer} companyId.path.required - The company's id
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */

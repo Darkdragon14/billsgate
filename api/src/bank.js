@@ -77,7 +77,7 @@ const router = require('express').Router();
  * GET /bank/{bankId}
  * @summary Return a specific bank
  * @tags bank
- * @param {integer} bankId.path - The bank's id
+ * @param {integer} bankId.path.required - The bank's id
  * @return {bankAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
@@ -118,7 +118,7 @@ const router = require('express').Router();
  * PUT /bank/{bankId}
  * @summary Update a specific bank
  * @tags bank
- * @param {integer} bankId.path - The bank's id 
+ * @param {integer} bankId.path.required - The bank's id 
  * @param {bank} request.body.required
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -137,7 +137,7 @@ const router = require('express').Router();
 * DELETE /bank/{bankId}
 * @summary Delete a specific user
 * @tags bank
-* @param {integer} bankId.path - The bank's is 
+* @param {integer} bankId.path.required - The bank's is 
 * @param {bankDeleted} request.body.required
 * @return 204 - success response - application/json
 * @return {error} 400 - TMiss the userId - application/json

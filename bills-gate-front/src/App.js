@@ -1,15 +1,8 @@
-import './App.css';
-import { Navigation } from './components/NavBard';
-import { Router } from './components/Router';
+import * as React from 'react';
+import MainStructure from './components/MainStructure';
 
-function App() {
+export default function App() {
   return (
-    <div className='app'>
-      <h1>React Router Demo</h1>
-      <Navigation />
-      <Router />
-    </div>
+    <MainStructure />
   );
 }
-
-export default App;

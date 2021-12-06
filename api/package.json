@@ -15,7 +15,8 @@
     "reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
     "about:demo": "echo 'Put demo data in the db'",
     "demo": "npx sequelize-cli db:seed:all",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "keywords": [
     "Bills",
@@ -25,6 +26,7 @@
   "author": "Sinoquet Tristan",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-jsdoc-swagger": "^1.6.7",
     "mysql2": "^2.3.3",

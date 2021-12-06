@@ -62,7 +62,7 @@ router.get('/all', async (req, res) => {
  * GET /user/{userId}
  * @summary Return a specific user
  * @tags user
- * @param {integer} userId.path - The user's is 
+ * @param {integer} userId.path.required - The user's is 
  * @return {userAnswer} 200 - success response - application/json
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
@@ -107,7 +107,7 @@ router.post('/', async (req, res) => {
  * PUT /user/{userId}
  * @summary Update a specific user
  * @tags user
- * @param {integer} userId.path - The user's id 
+ * @param {integer} userId.path.required - The user's id 
  * @param {user} request.body.required - The new username of this user
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
@@ -126,7 +126,7 @@ router.put('/:id', async (req, res) => {
 * DELETE /user/{userId}
 * @summary Delete a specific user
 * @tags user
-* @param {integer} userId.path - The user's is 
+* @param {integer} userId.path.required - The user's is 
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */

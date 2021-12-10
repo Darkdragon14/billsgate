@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   invoice.init({
     name: DataTypes.STRING,
     amount: DataTypes.FLOAT,
-    payementDate: DataTypes.DATE,
+    paymentDate: DataTypes.DATE,
     dueDate: DataTypes.DATE,
     pathToAttachedFile: DataTypes.STRING,
     companyId: DataTypes.INTEGER

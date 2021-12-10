@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     invoiceId: DataTypes.INTEGER,
     weight: DataTypes.FLOAT,
     isPayer: DataTypes.BOOLEAN,
-    payementDate: DataTypes.DATE
+    paymentDate: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'userInvoice',

@@ -39,7 +39,7 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      payementDate: {
+      paymentDate: {
         type: Sequelize.DATE
       },
       createdAt: {

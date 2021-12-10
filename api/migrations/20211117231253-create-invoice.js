@@ -15,7 +15,7 @@ module.exports = {
       amount: {
         type: Sequelize.FLOAT
       },
-      payementDate: {
+      paymentDate: {
         type: Sequelize.DATE
       },
       dueDate: {

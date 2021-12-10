@@ -3,18 +3,19 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
-import FieldsFormInvoice from './FieldsFormInvoice';
+import FieldsFormInvoice from './config/FieldsFormInvoice';
 import MyField from '../../components/MyField';
+import api from '../../utils/api';
 
 export default function FormInvoice(props) {
-  const { handleClose } = props
+  const { invoiceToModified, userInvoicesToModified, handleClose } = props
   const today = dayjs().format('YYYY-MM-DD');
-  const [newInvoice, setNewInvoice] = React.useState({
+  const [invoice, setInvoice] = React.useState({
     name: '',
-    totalAmount: 0,
+    amount: 0,
     dueDate: today,
     companyId: 0,
-    paiementDate: today
+    paymentDate: today
   })
   const [userInvoices, setUserInvoices] = React.useState([
       {
@@ -24,6 +25,23 @@ export default function FormInvoice(props) {
       }
   ])
   const [fields] = React.useState(FieldsFormInvoice);
+
+  React.useEffect(() => {
+    if (invoiceToModified) {
+      userInvoicesToModified.forEach(userInvoice => {
+        delete userInvoice.createdAt;
+        delete userInvoice.updatedAt;
+        userInvoice.isPayer = userInvoice.isPayer ? 1 : 0;
+      })
+      setUserInvoices(userInvoicesToModified);
+      delete invoiceToModified.createdAt;
+      delete invoiceToModified.updatedAt;
+      invoiceToModified.paymentDate = invoiceToModified.paymentDate ? invoiceToModified.paymentDate : today;
+      invoiceToModified.companyId = invoiceToModified.companyId ? invoiceToModified.companyId : 0;
+      invoiceToModified.dueDate = invoiceToModified.dueDate.substring(0, 10);
+      setInvoice(invoiceToModified);
+    }
+  }, []);
 
   const addNewUserInvoice = () => {
     const weight = 1 / (userInvoices.length + 1);
@@ -51,7 +69,7 @@ export default function FormInvoice(props) {
   }
 
   const handleInvoiceChange = (e, fieldId) => {
-    setNewInvoice({...newInvoice, [fieldId]: e.target.value});
+    setInvoice({...invoice, [fieldId]: e.target.value});
   }
 
   const handleUserInvoiceChange = (e, fieldId, id) => {
@@ -66,8 +84,25 @@ export default function FormInvoice(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault(); 
-    console.log('submit');
-    handleClose();
+    const method = invoiceToModified ? 'put' : 'post';
+    const path = invoiceToModified ? '/invoice/' + invoice.id : '/invoice';
+    if (!invoice.companyId) {
+      delete invoice.companyId;
+    }
+    if (invoice.paymentDate === today) {
+      delete invoice.paymentDate;
+    }
+    const body = {
+      invoice: invoice,
+      listLinkUserInvoice: userInvoices,
+    }
+    api(method, path, [], null, body).then(result => {
+      console.log(result);
+      handleClose();
+    }).catch(err => {
+      console.error(err);
+    })
+    
   }
 
   return (
@@ -87,7 +122,7 @@ export default function FormInvoice(props) {
           {section.id !== 'userInvoice' ? (
             <span key={section.id}>
               {section.fields.map(field => {
-                const value = newInvoice[field.id];
+                const value = invoice[field.id];
                 return (
                   <MyField key={field.id} field={field} value={value} index={-1} handleChange={handleInvoiceChange} />
                 )
@@ -112,11 +147,11 @@ export default function FormInvoice(props) {
                 container 
                 spacing={2}
               >
-                  <Button sx={{marginRight: "8px"}} variant="contained" onClick={addNewUserInvoice}>
+                  <Button sx={{marginRight: "8px"}} onClick={addNewUserInvoice}>
                     Add an User
                   </Button>
                   {userInvoices.length > 1 ? (
-                    <Button sx={{marginLeft: "8px"}} variant="contained" color="error" onClick={removeUserInvoice}>
+                    <Button sx={{marginLeft: "8px"}} color="error" onClick={removeUserInvoice}>
                       Remove an User
                     </Button>
                   ) : (

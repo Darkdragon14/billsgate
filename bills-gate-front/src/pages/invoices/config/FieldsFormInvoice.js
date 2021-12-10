@@ -10,8 +10,8 @@ const FieldsFormInvoice = [
         required: true
       },
       {
-        id: 'totalAmount',
-        label: 'Total Amount',
+        id: 'amount',
+        label: 'Amount',
         type: 'number',
         required: true
       },
@@ -96,8 +96,8 @@ const FieldsFormInvoice = [
         ]
       },
       {
-        id: 'paiementDate',
-        label: 'Paiement Date',
+        id: 'paymentDate',
+        label: 'Payment Date',
         type: 'date',
         required: false
       }

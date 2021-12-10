@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:8000';
+const protocol = window.location.protocol;
+const host = window.location.hostname;
+const baseUrl = protocol + '//' + host + ':8000';
 
 /**
  * 
@@ -18,7 +20,7 @@ export default function request(method, path, varPath, parameters, body){
       baseURL: baseUrl,
       url: path,
       params: parameters,
-      body: body
+      data: body
     }
     if(varPath && varPath.length > 0){
       configAxios.path += varPath.join('/');

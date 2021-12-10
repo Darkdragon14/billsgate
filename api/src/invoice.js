@@ -11,7 +11,7 @@ const router = require('express').Router();
  * @property {integer} id
  * @property {string} name
  * @property {string} amount
- * @property {string} payementDate
+ * @property {string} paymentDate
  * @property {string} dueDate
  * @property {string} pathToAttachedFile
  * @property {integer} companyId
@@ -24,7 +24,7 @@ const router = require('express').Router();
  * @typedef {object} invoice
  * @property {string} name
  * @property {string} amount
- * @property {string} payementDate
+ * @property {string} paymentDate
  * @property {string} dueDate
  * @property {string} pathToAttachedFile
  * @property {integer} companyId
@@ -95,11 +95,14 @@ router.get('/all', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const invoiceFind = await invoice.findByPk(req.params.id, {
-      include: userInvoice
-    });
+    const invoiceFind = await invoice.findByPk(req.params.id);
     if(invoiceFind){
-      res.status(200).send(invoiceFind);
+      const userInvoices = await userInvoice.findAll({where: {invoiceId: req.params.id}});
+      const response = {
+        invoice: invoiceFind,
+        userInvoices: userInvoices,
+      };
+      res.status(200).send(response);
     } else {
       res.status(404).send({message: 'Invoice not found'});
     }
@@ -124,7 +127,7 @@ router.post('/', async (req, res) => {
       linkInvoiceUser.invoiceId = newInvoice.dataValues.id;
       await userInvoice.create({...linkInvoiceUser});
     }
-    res.status(201).send({id: newUser.dataValues.id, message: 'Invoice created successfully'});
+    res.status(201).send({id: newInvoice.dataValues.id, message: 'Invoice created successfully'});
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -142,13 +145,13 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
+    console.log(req.body);
     if (req.body.invoice) {
-      await invoice.update({...req.body.invoice}, {where: {id: req.params.id}});
+      await invoice.update(req.body.invoice, {where: {id: req.params.id}});
     }
     if (req.body.listLinkUserInvoice && req.body.listLinkUserInvoice.length > 0) {
       for (const linkInvoiceUser of req.body.listLinkUserInvoice) {
-        linkInvoiceUser.invoiceId = newInvoice.dataValues.id;
-        await userInvoice.update({...linkInvoiceUser}, {where: {invoiceId: req.params.id}});
+        await userInvoice.update(linkInvoiceUser, {where: {[Op.and]: {id: linkInvoiceUser.id, invoiceId: req.params.id}}});
       }
     }
     res.sendStatus(204);
@@ -172,7 +175,7 @@ router.put('/:id', async (req, res) => {
   try {
     await userInvoice.update(
       {
-        dueDate: now()
+        paymentDate: now()
       }, 
       {
         where: {
@@ -193,7 +196,7 @@ router.put('/:id', async (req, res) => {
       }
     })
     if (isPayer) {
-      await invoice.update({...req.body.invoice}, {where: {id: req.params.invoiceId}});
+      await invoice.update({paymentDate: now()}, {where: {id: req.params.invoiceId}});
     }
     res.sendStatus(204);
   } catch (error) {

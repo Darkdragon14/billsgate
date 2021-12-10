@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import CreateInvoice from './CreateInvoice';
 import TableTitle from '../../components/TableTitle';
@@ -47,7 +48,7 @@ export default function Invoices() {
   const [invoiceToModified, setInvoiceToModified] = React.useState(null);
   const [userInvoicesToModified, setUserInvoicesToModified] = React.useState(null)
 
-  React.useEffect(() => {
+  const getInvoices = () => {
     api('get', '/invoice/all', [], {userId}).then(invoices => {
       const newRows = invoices.data.map((invoice) => {
         const dueAmount = invoice.amount * invoice.userInvoices[0].weight;
@@ -64,6 +65,10 @@ export default function Invoices() {
     }).catch(err => {
       console.error(err);
     });
+  };
+
+  React.useEffect(() => {
+    getInvoices();
   }, []);
 
   const handleRequestSort = (event, property) => {
@@ -102,12 +107,24 @@ export default function Invoices() {
     setOpen(false);
     setInvoiceToModified(null);
     setUserInvoicesToModified(null);
+    getInvoices();
   };
 
   const handleValidateInvoice = (e, rowId) => {
     e.preventDefault();
     api('patch', '/invoice/' + rowId + '/' + userId).then(result => {
       console.log(result);
+      getInvoices();
+    }).catch(err => {
+      console.error(err);
+    })
+  }
+
+  const handleInvalidateInvoice = (e, rowId) => {
+    e.preventDefault();
+    api('patch', '/invoice/' + rowId + '/' + userId, null, null, {invalidate: true}).then(result => {
+      console.log(result);
+      getInvoices();
     }).catch(err => {
       console.error(err);
     })
@@ -117,6 +134,7 @@ export default function Invoices() {
     e.preventDefault();
     api('delete', '/invoice/' + rowId).then(result => {
       console.log(result);
+      getInvoices();
     }).catch(err => {
       console.error(err);
     })
@@ -186,9 +204,15 @@ export default function Invoices() {
                         )}
                       </TableCell>
                       <TableCell align="center">
-                        <IconButton onClick={(e) => handleValidateInvoice(e, row.id)} aria-label="done" color="success">
-                          <DoneIcon />
-                        </IconButton>
+                        { row.paymentDateUser ? (
+                          <IconButton onClick={(e) => handleInvalidateInvoice(e, row.id)} aria-label="done" color="error">
+                            <CloseIcon />
+                          </IconButton>
+                        ):(
+                          <IconButton onClick={(e) => handleValidateInvoice(e, row.id)} aria-label="done" color="success">
+                            <DoneIcon />
+                          </IconButton>
+                        )}
                         <IconButton onClick={(e) => handleClickOpen(e, row.id)} aria-label="edit" color="info">
                           <EditIcon />
                         </IconButton>

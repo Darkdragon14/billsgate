@@ -173,9 +173,13 @@ router.put('/:id', async (req, res) => {
  */
  router.patch('/:invoiceId/:userId', async (req, res) => {
   try {
+    let paymentDate = now();
+    if (req.body.invalidate) {
+      paymentDate = null;
+    }
     await userInvoice.update(
       {
-        paymentDate: now()
+        paymentDate: paymentDate
       }, 
       {
         where: {
@@ -196,7 +200,7 @@ router.put('/:id', async (req, res) => {
       }
     })
     if (isPayer) {
-      await invoice.update({paymentDate: now()}, {where: {id: req.params.invoiceId}});
+      await invoice.update({paymentDate: paymentDate}, {where: {id: req.params.invoiceId}});
     }
     res.sendStatus(204);
   } catch (error) {

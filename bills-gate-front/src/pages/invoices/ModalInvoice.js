@@ -7,7 +7,7 @@ import FormInvoice from './FormInvoice';
 import DialogTitle from '@mui/material/DialogTitle';
 
 export default function ModalInvoice(props) {
-  const { open, invoiceToModified, userInvoicesToModified, handleClose } = props
+  const { open, invoiceToModified, userInvoicesToModified, userId, handleClose } = props
 
   return (
     <Dialog
@@ -19,7 +19,7 @@ export default function ModalInvoice(props) {
         Create a new Invoice
       </DialogTitle>
       <DialogContent>
-        <FormInvoice invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} handleClose={handleClose} />
+        <FormInvoice invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={userId} handleClose={handleClose} />
       </DialogContent>
       <DialogActions>
         <Button type="submit" form="createInvoice" color="success">

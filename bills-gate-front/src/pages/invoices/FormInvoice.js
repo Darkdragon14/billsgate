@@ -15,7 +15,7 @@ import api from '../../utils/api';
 import ValidateFormInvoice from './config/ValidateFormInvoice';
 
 export default function FormInvoice(props) {
-  const { invoiceToModified, userInvoicesToModified, handleClose } = props
+  const { invoiceToModified, userInvoicesToModified, userId, handleClose } = props
   const today = dayjs().format('YYYY-MM-DD');
   const [invoice, setInvoice] = React.useState({
     name: '',
@@ -31,10 +31,47 @@ export default function FormInvoice(props) {
         isPayer: 1
       }
   ])
-  const [fields] = React.useState(FieldsFormInvoice);
+  const [fields, setFields] = React.useState([]);
   const [errorFields, setErrorFields] = React.useState(null);
+  const [errorCompany, setErrorCompany] = React.useState(false);
 
   React.useEffect(() => {
+    if (FieldsFormInvoice[1].fields[0].selectField.length === 1) {
+      Promise.allSettled([api('get', '/user/all'), api('get', '/company/all')]).then(results => {
+        if (results[0].status === 'fulfilled') {
+          const listUser = FieldsFormInvoice[1].fields[0].selectField;
+          results[0].value.data.forEach(user => {
+            const addUser = {
+              value: user.id,
+              label: user.username
+            };
+            if(user.id === userId){
+              addUser.label = 'Me';
+            }
+            listUser.push(addUser);
+          })         
+          FieldsFormInvoice[1].fields[0].selectField = listUser;   
+        } else {
+          handleClose();
+        }
+        if (results[1].status === 'fulfilled') {
+          const listCompanies = FieldsFormInvoice[2].fields[0].selectField;
+          results[1].value.data.forEach(company => {
+            const addCompany = {
+              value: company.id,
+              label: company.name
+            };
+            listCompanies.push(addCompany);
+          })
+          FieldsFormInvoice[2].fields[0].selectField = listCompanies;
+        } else {
+          setErrorCompany(true);
+        }
+        setFields(FieldsFormInvoice);
+      });
+    } else {
+      setFields(FieldsFormInvoice);
+    }
     if (invoiceToModified) {
       userInvoicesToModified.forEach(userInvoice => {
         delete userInvoice.createdAt;
@@ -109,7 +146,6 @@ export default function FormInvoice(props) {
         listLinkUserInvoice: userInvoices,
       }
       api(method, path, [], null, body).then(result => {
-        console.log(result);
         handleClose();
       }).catch(err => {
         console.error(err);
@@ -153,6 +189,11 @@ export default function FormInvoice(props) {
                     />
                   )
                 })}
+                { section.id === 'more' && errorCompany ? (
+                  <MuiAlert sx={{marginTop: "10px"}} elevation={6} severity="warning">We can't show you the list of companies, you can try later to add.</MuiAlert>
+                ) : (
+                  null
+                )}
               </span>
             ) : (
               <span key={section.id}>

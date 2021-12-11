@@ -36,14 +36,6 @@ const FieldsFormInvoice = [
           {
             value: 0,
             label: 'Select an User'
-          },
-          {
-            value: 1,
-            label: 'John'
-          },
-          {
-            value: 2,
-            label: 'Alice'
           }
         ]
       },
@@ -84,14 +76,6 @@ const FieldsFormInvoice = [
           {
             value: 0,
             label: 'Select a Company'
-          },
-          {
-            value: 1,
-            label: 'Home Rent'
-          },
-          {
-            value: 2,
-            label: 'Acces Electricity'
           }
         ]
       },

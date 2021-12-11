@@ -152,7 +152,7 @@ export default function Invoices() {
           Add invoice
         </Button>
       </Grid>
-      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} handleClose={handleClose} />
+      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={userId} handleClose={handleClose} />
       <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
         <TableContainer>
           <TableTitle />

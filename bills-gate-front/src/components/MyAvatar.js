@@ -9,8 +9,6 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ChangeUser from './ChangeUser';
 
-const settings = ['User\'s switch'];
-
 export default function MyAvatar(props) {
   const { user, users, setUser } = props;
   const [openChangeUse, setOpenChangeUser] = React.useState(false);

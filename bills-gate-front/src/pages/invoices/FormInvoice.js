@@ -86,7 +86,7 @@ export default function FormInvoice(props) {
       invoiceToModified.dueDate = invoiceToModified.dueDate.substring(0, 10);
       setInvoice(invoiceToModified);
     }
-  }, []);
+  }, [today, userId, invoiceToModified, userInvoicesToModified, handleClose]);
 
   const addNewUserInvoice = () => {
     const weight = 1 / (userInvoices.length + 1);

@@ -10,6 +10,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import NavBar from './NavBar';
 import AppBar from './AppBar';
 import MyRouter from './MyRouter';
+import api from '../utils/api';
 
 const drawerWidth = 240;
 
@@ -63,6 +64,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MainStructure() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+  const [users, setUsers] = React.useState([]);
+
+  React.useEffect(() => {
+    api('get', '/user/all').then(response => {
+      setUsers(response.data);
+      setUser(response.data[0]);
+    });
+  }, [])
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -75,7 +85,14 @@ export default function MainStructure() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar open={open} handleDrawerOpen={handleDrawerOpen} drawerwidth={drawerWidth} theme={theme}/>
+      <AppBar 
+        open={open}
+        drawerwidth={drawerWidth} 
+        theme={theme} 
+        user={user} 
+        users={users}  
+        handleDrawerOpen={handleDrawerOpen}
+        setUser={setUser} />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -87,7 +104,7 @@ export default function MainStructure() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <MyRouter />
+        <MyRouter user={user} />
       </Box>
     </Box>
   );

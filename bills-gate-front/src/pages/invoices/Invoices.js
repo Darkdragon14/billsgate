@@ -21,8 +21,6 @@ import api from '../../utils/api';
 import { getComparator, stableSort } from '../../utils/table';
 import FieldsTableInvoice from './config/FieldsTableInvoice';
 
-const userId = 2;
-
 function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, paymentDate, isPayer) {
   return {
     id,
@@ -37,7 +35,8 @@ function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, 
   };
 }
 
-export default function Invoices() {
+export default function Invoices(props) {
+  const { user } = props;
   const [rows, setRows] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
@@ -49,7 +48,7 @@ export default function Invoices() {
   const [userInvoicesToModified, setUserInvoicesToModified] = React.useState(null)
 
   const getInvoices = () => {
-    api('get', '/invoice/all', [], {userId}).then(invoices => {
+    api('get', '/invoice/all', [], {userId: user.id}).then(invoices => {
       const newRows = invoices.data.map((invoice) => {
         const dueAmount = invoice.amount * invoice.userInvoices[0].weight;
         const dueDate = invoice.dueDate.substring(0, 10);
@@ -68,8 +67,10 @@ export default function Invoices() {
   };
 
   React.useEffect(() => {
-    getInvoices();
-  }, []);
+    if (user) {
+      getInvoices();
+    }
+  }, [user]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -112,7 +113,7 @@ export default function Invoices() {
 
   const handleValidateInvoice = (e, rowId) => {
     e.preventDefault();
-    api('patch', '/invoice/' + rowId + '/' + userId).then(result => {
+    api('patch', '/invoice/' + rowId + '/' + user.id).then(result => {
       console.log(result);
       getInvoices();
     }).catch(err => {
@@ -122,7 +123,7 @@ export default function Invoices() {
 
   const handleInvalidateInvoice = (e, rowId) => {
     e.preventDefault();
-    api('patch', '/invoice/' + rowId + '/' + userId, null, null, {invalidate: true}).then(result => {
+    api('patch', '/invoice/' + rowId + '/' + user.id, null, null, {invalidate: true}).then(result => {
       console.log(result);
       getInvoices();
     }).catch(err => {
@@ -152,7 +153,7 @@ export default function Invoices() {
           Add invoice
         </Button>
       </Grid>
-      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={userId} handleClose={handleClose} />
+      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={user ? user.id : 0} handleClose={handleClose} />
       <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
         <TableContainer>
           <TableTitle />

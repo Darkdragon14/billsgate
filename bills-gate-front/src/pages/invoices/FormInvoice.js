@@ -122,7 +122,7 @@ export default function FormInvoice(props) {
       onSubmit={(e) => handleSubmit(e)}
     >
       {fields.map((section, index) => (
-        <Accordion expanded={section.id !== 'more'}>
+        <Accordion defaultExpanded={section.id !== 'more'}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel2a-content"

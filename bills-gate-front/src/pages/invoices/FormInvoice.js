@@ -4,6 +4,11 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import dayjs from 'dayjs';
 import FieldsFormInvoice from './config/FieldsFormInvoice';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MyField from '../../components/MyField';
 import api from '../../utils/api';
 
@@ -117,50 +122,58 @@ export default function FormInvoice(props) {
       onSubmit={(e) => handleSubmit(e)}
     >
       {fields.map((section, index) => (
-        <span key={index}>
-          <h4 id={section.id}>{section.label}</h4>
-          {section.id !== 'userInvoice' ? (
-            <span key={section.id}>
-              {section.fields.map(field => {
-                const value = invoice[field.id];
-                return (
-                  <MyField key={field.id} field={field} value={value} index={-1} handleChange={handleInvoiceChange} />
-                )
-              })}
-            </span>
-          ) : (
-            <span key={section.id}>
-              {userInvoices.map((userInvoice, index) => (
-                <div key={'user' + index}>
-                  {section.fields.map(field => {
-                    const value = userInvoice[field.id];
-                    return (
-                      <MyField key={field.id} field={field} value={value} index={index} handleChange={handleUserInvoiceChange} />
-                    )
-                  })}
-                </div>
-              ))}
-              <Grid 
-                direction="row"
-                justifyContent="center"
-                sx={{marginTop: "8px"}} 
-                container 
-                spacing={2}
-              >
-                  <Button sx={{marginRight: "8px"}} onClick={addNewUserInvoice}>
-                    Add an User
-                  </Button>
-                  {userInvoices.length > 1 ? (
-                    <Button sx={{marginLeft: "8px"}} color="error" onClick={removeUserInvoice}>
-                      Remove an User
+        <Accordion expanded={section.id !== 'more'}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2a-content"
+            id={section.id}
+          >
+            <Typography>{section.label}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {section.id !== 'userInvoice' ? (
+              <span key={section.id}>
+                {section.fields.map(field => {
+                  const value = invoice[field.id];
+                  return (
+                    <MyField key={field.id} field={field} value={value} index={-1} handleChange={handleInvoiceChange} />
+                  )
+                })}
+              </span>
+            ) : (
+              <span key={section.id}>
+                {userInvoices.map((userInvoice, index) => (
+                  <div key={'user' + index}>
+                    {section.fields.map(field => {
+                      const value = userInvoice[field.id];
+                      return (
+                        <MyField key={field.id} field={field} value={value} index={index} handleChange={handleUserInvoiceChange} />
+                      )
+                    })}
+                  </div>
+                ))}
+                <Grid 
+                  direction="row"
+                  justifyContent="center"
+                  sx={{marginTop: "8px"}} 
+                  container 
+                  spacing={2}
+                >
+                    <Button sx={{marginRight: "8px"}} onClick={addNewUserInvoice}>
+                      Add an User
                     </Button>
-                  ) : (
-                    null
-                  )}
-              </Grid>
-            </span>
-          )}
-        </span>
+                    {userInvoices.length > 1 ? (
+                      <Button sx={{marginLeft: "8px"}} color="error" onClick={removeUserInvoice}>
+                        Remove an User
+                      </Button>
+                    ) : (
+                      null
+                    )}
+                </Grid>
+              </span>
+            )}
+          </AccordionDetails>
+        </Accordion>
       ))}
     </Box>
   );

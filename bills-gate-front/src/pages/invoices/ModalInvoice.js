@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import FormInvoice from './FormInvoice';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function CreateInvoice(props) {
+export default function ModalInvoice(props) {
   const { open, invoiceToModified, userInvoicesToModified, handleClose } = props
 
   return (

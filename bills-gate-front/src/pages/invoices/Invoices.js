@@ -14,7 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
-import CreateInvoice from './CreateInvoice';
+import ModalInvoice from './ModalInvoice';
 import TableTitle from '../../components/TableTitle';
 import MyTableHead from '../../components/MyTableHead';
 import api from '../../utils/api';
@@ -152,7 +152,7 @@ export default function Invoices() {
           Add invoice
         </Button>
       </Grid>
-      <CreateInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} handleClose={handleClose} />
+      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} handleClose={handleClose} />
       <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
         <TableContainer>
           <TableTitle />

@@ -128,7 +128,7 @@ export default function FormInvoice(props) {
       autoComplete="off"
       onSubmit={(e) => handleSubmit(e)}
     >
-      {fields.map((section, index) => (
+      {fields.map(section => (
         <Accordion key={section.id} defaultExpanded={section.id !== 'more'}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
@@ -166,7 +166,7 @@ export default function FormInvoice(props) {
                           field={field} 
                           value={value} 
                           index={index} 
-                          error={errorFields && errorFields.userInvoices[index][field.id]} 
+                          error={errorFields && errorFields.userInvoices[index] && errorFields.userInvoices[index][field.id]} 
                           handleChange={handleUserInvoiceChange} 
                         />
                       )
@@ -192,7 +192,7 @@ export default function FormInvoice(props) {
                     )}
                 </Grid>
                 { errorFields && errorFields.totalWeight ? (
-                  <MuiAlert elevation={6} severity="error">The total weight is different of 1</MuiAlert>
+                  <MuiAlert sx={{marginTop: "10px"}} elevation={6} severity="error">The total weight is different of 1</MuiAlert>
                 ) : (
                   null
                 )}

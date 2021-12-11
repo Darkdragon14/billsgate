@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
 export default function MyField(props) {
-  const { field, value, index, handleChange } = props;
+  const { field, value, index, error, handleChange } = props;
 
   const id = index === -1 ? field.id : field.id + index;
 
@@ -16,6 +16,7 @@ export default function MyField(props) {
       label={field.label}
       helperText={field.info}
       required={field.required}
+      error={error}
       onChange={e => handleChange(e, field.id, index)}
       type={field.type !== 'select' ? field.type : ''}
     >

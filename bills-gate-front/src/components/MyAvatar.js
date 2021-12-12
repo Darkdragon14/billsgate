@@ -7,10 +7,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import Checkbox from '@mui/material/Checkbox';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { createTheme } from '@mui/material/styles';
 import ChangeUser from './ChangeUser';
 
 export default function MyAvatar(props) {
-  const { user, users, setUser } = props;
+  const { user, users, theme, setUser, setTheme } = props;
   const [openChangeUse, setOpenChangeUser] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -30,6 +34,16 @@ export default function MyAvatar(props) {
     setAnchorElUser(null);
     setOpenChangeUser(false);
   };
+
+  const handleChangeThemeMode = () => {
+    const newTheme = createTheme({
+      palette: {
+        mode: theme.palette.mode === 'dark' ? 'light' : 'dark',
+      },
+    });
+    localStorage.setItem('themeMode', theme.palette.mode === 'dark' ? 'light' : 'dark');
+    setTheme(newTheme);
+  }
 
   return (
     <Box sx={{ marginLeft: "auto", flexGrow: 0 }}>
@@ -65,6 +79,16 @@ export default function MyAvatar(props) {
             onClose={handleCloseChangeUser}
             users={users}
             setUser={setUser}
+          />
+        </MenuItem>
+        <MenuItem>
+          Mode : 
+          <Checkbox 
+            label="Light or dark" 
+            icon={<LightModeIcon />}
+            checkedIcon={<DarkModeIcon />}
+            onClick={handleChangeThemeMode}
+            checked={theme.palette.mode === 'dark'}
           />
         </MenuItem>
       </Menu>

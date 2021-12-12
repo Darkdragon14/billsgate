@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import NavBar from './NavBar';
 import AppBar from './AppBar';
 import MyRouter from './MyRouter';
@@ -62,10 +62,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function MainStructure() {
-  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState(null);
   const [users, setUsers] = React.useState([]);
+  const [theme, setTheme] = React.useState(createTheme({
+    palette: {
+      mode: localStorage.getItem('themeMode') ? localStorage.getItem('themeMode') : 'light',
+    },
+  }));
 
   React.useEffect(() => {
     api('get', '/user/all').then(response => {
@@ -83,29 +87,33 @@ export default function MainStructure() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar 
-        open={open}
-        drawerwidth={drawerWidth} 
-        theme={theme} 
-        user={user} 
-        users={users}  
-        handleDrawerOpen={handleDrawerOpen}
-        setUser={setUser} />
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <NavBar />
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <MyRouter user={user} />
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar 
+          open={open}
+          drawerwidth={drawerWidth} 
+          theme={theme} 
+          user={user} 
+          users={users}  
+          handleDrawerOpen={handleDrawerOpen}
+          setUser={setUser} 
+          setTheme={setTheme}
+        />
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <NavBar />
+        </Drawer>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <DrawerHeader />
+          <MyRouter user={user} />
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }

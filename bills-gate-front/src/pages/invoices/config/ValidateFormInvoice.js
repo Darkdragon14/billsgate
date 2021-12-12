@@ -38,7 +38,7 @@ export default function ValidateFormInvoice(invoice, userInvoices) {
         totalWeight += userInvoice.weight;
         errorFields.userInvoices.push({
             userId: !(userInvoice.userId > 0),
-            weight: !(0 < userInvoice.weight && userInvoice.weight <= 1),
+            weight: !(0 <= userInvoice.weight && userInvoice.weight <= 1),
             isPayer: !(userInvoice.isPayer === 0 || userInvoice.isPayer === 1),
         })
     });

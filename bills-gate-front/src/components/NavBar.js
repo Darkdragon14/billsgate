@@ -5,9 +5,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import BusinessIcon from '@mui/icons-material/Business';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import HomeIcon from '@mui/icons-material/Home';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 function ListItemLink(props) {
@@ -42,10 +43,11 @@ ListItemLink.propTypes = {
 export default function NavBar() {
   return (
     <List>
+      <ListItemLink to="/home" primary="Home" icon={<HomeIcon />} />
+      <ListItemLink to="/banks" primary="Banks" icon={<AccountBalanceIcon />} />
       <ListItemLink to="/invoices" primary="Invoices" icon={<FileCopyIcon />} />
-      <ListItemLink to="/drafts" primary="Drafts" icon={<DraftsIcon />} />
-      <ListItemLink to="/trash" primary="Trash" icon={<DeleteIcon />} />
-      <ListItemLink to="/spam" primary="Spam" icon={<RemoveCircleIcon />} />
+      <ListItemLink to="/trade" primary="Trades" icon={<PeopleAltIcon />} />
+      <ListItemLink to="/companies" primary="Companies" icon={<BusinessIcon />} />
     </List>
   );
 }

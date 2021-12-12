@@ -35,7 +35,7 @@ export default function ValidateFormInvoice(invoice, userInvoices) {
 
     let totalWeight = 0;
     userInvoices.forEach(userInvoice => {
-        totalWeight += userInvoice.weight;
+        totalWeight += parseFloat(userInvoice.weight);
         errorFields.userInvoices.push({
             userId: !(userInvoice.userId > 0),
             weight: !(0 <= userInvoice.weight && userInvoice.weight <= 1),

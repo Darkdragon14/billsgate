@@ -14,12 +14,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
+import dayjs from 'dayjs';
 import ModalInvoice from './ModalInvoice';
 import TableTitle from '../../components/TableTitle';
 import MyTableHead from '../../components/MyTableHead';
 import api from '../../utils/api';
 import { getComparator, stableSort } from '../../utils/table';
 import FieldsTableInvoice from './config/FieldsTableInvoice';
+import FieldsFilterInvoice from './config/FieldsFilterInvoice';
 
 function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, paymentDate, isPayer) {
   return {
@@ -42,23 +44,31 @@ export default function Invoices(props) {
   const [orderBy, setOrderBy] = React.useState('calories');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  // Management Filter
+  const [fieldsFilter, setFieldsFilter] = React.useState([]);
   //For the modal create invoice
   const [open, setOpen] = React.useState(false);
   const [invoiceToModified, setInvoiceToModified] = React.useState(null);
   const [userInvoicesToModified, setUserInvoicesToModified] = React.useState(null)
 
-  const getInvoices = () => {
-    api('get', '/invoice/all', [], {userId: user.id}).then(invoices => {
+  const getInvoices = (filter = null) => {
+    let path = '/invoice/all';
+    let method = 'get';
+    if (filter) {
+      path = 'invoice/filter'
+      method = 'post'
+    }
+    api(method, path, [], {userId: user.id}, filter).then(invoices => {
+      console.log(invoices)
       const newRows = invoices.data.map((invoice) => {
-        const dueAmount = invoice.amount * invoice.userInvoices[0].weight;
+        const dueAmount = invoice.amount * invoice.weight;
         const dueDate = invoice.dueDate.substring(0, 10);
-        let paymentDateUser = invoice.userInvoices[0].paymentDate;
+        let paymentDateUser = invoice.paymentDate;
         if (paymentDateUser) {
           paymentDateUser = paymentDateUser.substring(0, 10);
         }
         const paymentDate = invoice.paymentDate ? invoice.paymentDate.substring(0, 10) : null;
-        const isPayer = invoice.userInvoices[0].isPayer;
-        return createData(invoice.id, invoice.name, invoice.amount.toFixed(2), dueAmount.toFixed(2), dueDate, paymentDateUser, paymentDate, isPayer);
+        return createData(invoice.id, invoice.name, invoice.amount.toFixed(2), dueAmount.toFixed(2), dueDate, paymentDateUser, paymentDate, invoice.isPayer);
       });
       setRows(newRows);
     }).catch(err => {
@@ -70,6 +80,7 @@ export default function Invoices(props) {
     if (user) {
       getInvoices();
     }
+    setFieldsFilter(FieldsFilterInvoice);
   }, [user]);
 
   const handleRequestSort = (event, property) => {
@@ -90,6 +101,34 @@ export default function Invoices(props) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  // For the filter
+  const handleSetFieldsFilter = async (fieldFilterId, value) => {
+    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
+      if (fieldFilter.id === fieldFilterId){
+        fieldFilter.value = value;
+        fieldFilter.ignore = false;
+        return fieldFilter;
+      }
+      return fieldFilter;
+    });
+    setFieldsFilter(newFieldsFilter);
+    getInvoices(newFieldsFilter);
+  }
+
+  const handleResetFieldsFilter = () => {
+    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
+      fieldFilter.ignore = true;
+      if (typeof fieldFilter.value === 'boolean') {
+        fieldFilter.value = false;
+      } else {
+        fieldFilter.value = '';
+      }
+      return fieldFilter;
+    });
+    setFieldsFilter(newFieldsFilter);
+    getInvoices();
+  }
   
   // For the Modal Create invoice
   const handleClickOpen = (e, invoiceId) => {
@@ -156,11 +195,16 @@ export default function Invoices(props) {
       <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={user ? user.id : 0} handleClose={handleClose} />
       <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
         <TableContainer>
-          <TableTitle />
+          <TableTitle 
+            title='Invoices'
+            fieldsFilter={fieldsFilter}
+            handleSetFieldsFilter={handleSetFieldsFilter}
+            handleResetFieldsFilter={handleResetFieldsFilter}
+          />
           <Table
             sx={{ minWidth: 500 }}
             stickyHeader 
-            aria-label="sticky table"
+            aria-label='sticky table'
             size='medium'
           >
             <MyTableHead
@@ -194,9 +238,9 @@ export default function Invoices(props) {
                       </TableCell>
                       <TableCell align="center">{row.totalAmount}</TableCell>
                       <TableCell align="center">{row.dueAmount}</TableCell>
-                      <TableCell align="center">{row.dueDate}</TableCell>
-                      <TableCell align="center">{row.paymentDateUser}</TableCell>
-                      <TableCell align="center">{row.paymentDate}</TableCell>
+                      <TableCell align="center">{dayjs(row.dueDate).format('DD-MM-YYYY')}</TableCell>
+                      <TableCell align="center">{row.paymentDateUser ? dayjs(row.paymentDateUser).format('DD-MM-YYYY') : null}</TableCell>
+                      <TableCell align="center">{row.paymentDate ? dayjs(row.paymentDate).format('DD-MM-YYYY') : null}</TableCell>
                       <TableCell align="center">
                         { row.isPayer ? (
                           <DoneIcon />

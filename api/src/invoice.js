@@ -1,7 +1,9 @@
 const { Op } = require('sequelize');
 const { now } = require('sequelize/lib/utils');
 const model = require('../models');
-const { user, bank, invoice, userInvoice } = model;
+const { invoice, userInvoice } = model;
+const myFilter = require('./utils/filter');
+const mergeInvoicesAndUser = require('./utils/mergeInvoicesAndUser');
 
 const router = require('express').Router();
 
@@ -17,6 +19,9 @@ const router = require('express').Router();
  * @property {integer} companyId
  * @property {string} createdAt
  * @property {string} updatedAt
+ * @property {float} weight
+ * @property {integer} userId
+ * @property {string} paymentDateUser
  */
 
 /**
@@ -77,7 +82,8 @@ router.get('/all', async (req, res) => {
         }
       }] 
     });
-    res.status(200).send(invoices);
+    const rows = mergeInvoicesAndUser(invoices);
+    res.status(200).send(rows);
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -128,6 +134,34 @@ router.post('/', async (req, res) => {
       await userInvoice.create({...linkInvoiceUser});
     }
     res.status(201).send({id: newInvoice.dataValues.id, message: 'Invoice created successfully'});
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
+  }
+});
+
+/**
+ * POST /invoice/filter
+ * @summary Create a new invoice 
+ * @tags invoice
+ * @param {fieldsFilterInvoice} request.body.require
+ * @return {array<invoiceAnswer} 200 - success response - application/json
+ * @return {error} 500 - The server failed - application/json
+ */
+ router.post('/filter', async (req, res) => {
+  try {
+    const fieldsFilter = req.body;
+    const invoices = await invoice.findAll({
+      include: [{
+        model: userInvoice,
+        where: {
+          userId: req.query.userId
+        }
+      }] 
+    });
+    const rows = mergeInvoicesAndUser(invoices);
+    const rowsFilter = myFilter(rows, fieldsFilter);
+    res.status(200).send(rowsFilter);
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});

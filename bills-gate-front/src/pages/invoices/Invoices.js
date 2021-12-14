@@ -19,7 +19,6 @@ import ModalInvoice from './ModalInvoice';
 import TableTitle from '../../components/TableTitle';
 import MyTableHead from '../../components/MyTableHead';
 import api from '../../utils/api';
-import { getComparator, stableSort } from '../../utils/table';
 import FieldsTableInvoice from './config/FieldsTableInvoice';
 import FieldsFilterInvoice from './config/FieldsFilterInvoice';
 
@@ -40,8 +39,6 @@ function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, 
 export default function Invoices(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   // Management Filter
@@ -59,7 +56,6 @@ export default function Invoices(props) {
       method = 'post'
     }
     api(method, path, [], {userId: user.id}, filter).then(invoices => {
-      console.log(invoices)
       const newRows = invoices.data.map((invoice) => {
         const dueAmount = invoice.amount * invoice.weight;
         const dueDate = invoice.dueDate.substring(0, 10);
@@ -82,12 +78,6 @@ export default function Invoices(props) {
     }
     setFieldsFilter(FieldsFilterInvoice);
   }, [user]);
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -208,16 +198,10 @@ export default function Invoices(props) {
             size='medium'
           >
             <MyTableHead
-              order={order}
-              orderBy={orderBy}
               headCells={FieldsTableInvoice}
-              onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.slice().sort(getComparator(order, orderBy)) */}
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
 

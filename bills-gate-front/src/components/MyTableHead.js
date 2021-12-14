@@ -1,17 +1,10 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import { visuallyHidden } from '@mui/utils';
 
 export default function MyTableHead(props) {
-    const { order, orderBy, headCells, onRequestSort } =
-      props;
-    const createSortHandler = (property) => (event) => {
-      onRequestSort(event, property);
-    };
+    const { headCells } = props;
   
     return (
       <TableHead>
@@ -21,20 +14,8 @@ export default function MyTableHead(props) {
               key={headCell.id}
               align='center'
               padding='normal'
-              sortDirection={orderBy === headCell.id ? order : false}
             >
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
-                ) : null}
-              </TableSortLabel>
+              {headCell.label}
             </TableCell>
           ))}
           <TableCell align='center' padding='normal'>Actions</TableCell>

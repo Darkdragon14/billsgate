@@ -1,23 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import DoneIcon from '@mui/icons-material/Done';
-import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
-import dayjs from 'dayjs';
 import ModalInvoice from './ModalInvoice';
-import TableTitle from '../../components/TableTitle';
-import MyTableHead from '../../components/MyTableHead';
+import TableCustom from '../../components/Table/TableCustom'
 import api from '../../utils/api';
 import FieldsTableInvoice from './config/FieldsTableInvoice';
 import FieldsFilterInvoice from './config/FieldsFilterInvoice';
@@ -39,8 +25,6 @@ function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, 
 export default function Invoices(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   // Management Filter
   const [fieldsFilter, setFieldsFilter] = React.useState([]);
   //For the modal create invoice
@@ -79,19 +63,6 @@ export default function Invoices(props) {
     setFieldsFilter(FieldsFilterInvoice);
   }, [user]);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
   // For the filter
   const handleSetFieldsFilter = async (fieldFilterId, value) => {
     const newFieldsFilter = fieldsFilter.map(fieldFilter => {
@@ -121,7 +92,7 @@ export default function Invoices(props) {
   }
   
   // For the Modal Create invoice
-  const handleClickOpen = (e, invoiceId) => {
+  const handleEditInvoice = (e, invoiceId) => {
     if (invoiceId) {
       api('get', `/invoice/${invoiceId}`).then(response => {
         setInvoiceToModified(response.data.invoice);
@@ -143,7 +114,6 @@ export default function Invoices(props) {
   const handleValidateInvoice = (e, rowId) => {
     e.preventDefault();
     api('patch', '/invoice/' + rowId + '/' + user.id).then(result => {
-      console.log(result);
       getInvoices();
     }).catch(err => {
       console.error(err);
@@ -153,7 +123,6 @@ export default function Invoices(props) {
   const handleInvalidateInvoice = (e, rowId) => {
     e.preventDefault();
     api('patch', '/invoice/' + rowId + '/' + user.id, null, null, {invalidate: true}).then(result => {
-      console.log(result);
       getInvoices();
     }).catch(err => {
       console.error(err);
@@ -163,7 +132,6 @@ export default function Invoices(props) {
   const handleDeleteInvoice = (e, rowId) => {
     e.preventDefault();
     api('delete', '/invoice/' + rowId).then(result => {
-      console.log(result);
       getInvoices();
     }).catch(err => {
       console.error(err);
@@ -178,103 +146,24 @@ export default function Invoices(props) {
         justifyContent="flex-end"
         alignItems="center"
       >
-        <Button onClick={handleClickOpen}>
+        <Button onClick={handleEditInvoice}>
           Add invoice
         </Button>
       </Grid>
       <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={user ? user.id : 0} handleClose={handleClose} />
-      <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
-        <TableContainer>
-          <TableTitle 
-            title='Invoices'
-            fieldsFilter={fieldsFilter}
-            handleSetFieldsFilter={handleSetFieldsFilter}
-            handleResetFieldsFilter={handleResetFieldsFilter}
-          />
-          <Table
-            sx={{ minWidth: 500 }}
-            stickyHeader 
-            aria-label='sticky table'
-            size='medium'
-          >
-            <MyTableHead
-              headCells={FieldsTableInvoice}
-            />
-            <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      tabIndex={-1}
-                      key={row.id}
-                    >
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="normal"
-                        align="center"
-                      >
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="center">{row.totalAmount}</TableCell>
-                      <TableCell align="center">{row.dueAmount}</TableCell>
-                      <TableCell align="center">{dayjs(row.dueDate).format('DD-MM-YYYY')}</TableCell>
-                      <TableCell align="center">{row.paymentDateUser ? dayjs(row.paymentDateUser).format('DD-MM-YYYY') : null}</TableCell>
-                      <TableCell align="center">{row.paymentDate ? dayjs(row.paymentDate).format('DD-MM-YYYY') : null}</TableCell>
-                      <TableCell align="center">
-                        { row.isPayer ? (
-                          <DoneIcon />
-                        ):(
-                          null
-                        )}
-                      </TableCell>
-                      <TableCell align="center">
-                        { row.paymentDateUser ? (
-                          <IconButton onClick={(e) => handleInvalidateInvoice(e, row.id)} aria-label="done" color="error">
-                            <CloseIcon />
-                          </IconButton>
-                        ):(
-                          <IconButton onClick={(e) => handleValidateInvoice(e, row.id)} aria-label="done" color="success">
-                            <DoneIcon />
-                          </IconButton>
-                        )}
-                        <IconButton onClick={(e) => handleClickOpen(e, row.id)} aria-label="edit" color="info">
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={(e) => handleDeleteInvoice(e, row.id)} aria-label="delete" color="error">
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  sx={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ display: rows.length > 5 ? "block" : "none" }}
-        />
-      </Paper>
+      <TableCustom
+        title="Invoices" 
+        rows={rows}
+        columns={FieldsTableInvoice}
+        FieldToValidate="paymentDateUser"
+        fieldsFilter={fieldsFilter}
+        handleSetFieldsFilter={handleSetFieldsFilter}
+        handleResetFieldsFilter={handleResetFieldsFilter}
+        handleInvalidate={handleInvalidateInvoice}
+        handleValidate={handleValidateInvoice}
+        handleEdit={handleEditInvoice}
+        handleDelete={handleDeleteInvoice}
+      />
     </Box>
   );
 }

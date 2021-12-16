@@ -39,44 +39,48 @@ export default function TableTitle(props) {
             >
                 {title}
             </Typography>
-            <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Filter list">
-                    <IconButton onClick={handleOpenFilterMenu}>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-                <Menu
-                    open={Boolean(anchorElFilter)}
-                    onClose={handleCloseFilterMenu}
-                    anchorEl={anchorElFilter}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                >
-                    <MenuItem>
-                        <Typography textAlign="center">Filter</Typography>
-                    </MenuItem>
-                    <Divider />
-                    {fieldsFilter.map(fieldFilter => (
-                        <MenuItem key={fieldFilter.id}>
-                            {fieldFilter.label} : 
-                            {fieldFilter.type === 'checkbox' ? (
-                                <Checkbox checked={fieldFilter.value} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.checked)} />
-                            ) : (
-                                <TextField value={fieldFilter.value} variant="standard" type={fieldFilter.type} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.value)}/> 
-                            )}
+            { fieldsFilter.length > 0 ? (
+                <Box sx={{ flexGrow: 0 }}>
+                    <Tooltip title="Filter list">
+                        <IconButton onClick={handleOpenFilterMenu}>
+                            <FilterListIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu
+                        open={Boolean(anchorElFilter)}
+                        onClose={handleCloseFilterMenu}
+                        anchorEl={anchorElFilter}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <MenuItem>
+                            <Typography textAlign="center">Filter</Typography>
                         </MenuItem>
-                    ))}
-                    <MenuItem>
-                        <Button sx={{ margin: 'auto'}} onClick={handleResetFieldsFilter}>Reset Filter</Button>
-                    </MenuItem>
-                </Menu>
-            </Box>    
+                        <Divider />
+                        {fieldsFilter.map(fieldFilter => (
+                            <MenuItem key={fieldFilter.id}>
+                                {fieldFilter.label} : 
+                                {fieldFilter.type === 'checkbox' ? (
+                                    <Checkbox checked={fieldFilter.value} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.checked)} />
+                                ) : (
+                                    <TextField value={fieldFilter.value} variant="standard" type={fieldFilter.type} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.value)}/> 
+                                )}
+                            </MenuItem>
+                        ))}
+                        <MenuItem>
+                            <Button sx={{ margin: 'auto'}} onClick={handleResetFieldsFilter}>Reset Filter</Button>
+                        </MenuItem>
+                    </Menu>
+                </Box>   
+            ):(
+                null
+            )}
         </Toolbar>
     );
 }

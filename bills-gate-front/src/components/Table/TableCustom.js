@@ -42,7 +42,7 @@ export default function TableCustom(props) {
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
+        <Paper key={title} sx={{ width: '100%', overflow: 'hidden', marginTop: '15px' }}>
             <TableContainer>
                 <TableTitle 
                     title={title}
@@ -52,8 +52,6 @@ export default function TableCustom(props) {
                 />
                 <Table
                     sx={{ minWidth: 500 }}
-                    stickyHeader 
-                    aria-label='sticky table'
                     size='medium'
                 >
                     <TableHeadCustom
@@ -73,7 +71,7 @@ export default function TableCustom(props) {
                             ))}
                             <CellAction
                                 isValidate={row[FieldToValidate]}
-                                rowId={row.id}
+                                row={row}
                                 handleValidate={handleValidate}
                                 handleInvalidate={handleInvalidate}
                                 handleEdit={handleEdit}

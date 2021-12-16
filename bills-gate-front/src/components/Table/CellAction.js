@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 export default function CellAction(props) {
   const {
     isValidate,
-    rowId,
+    row,
     handleValidate,
     handleInvalidate,
     handleEdit,
@@ -19,28 +19,28 @@ export default function CellAction(props) {
   return(
     <TableCell align="center">
         { isValidate && handleInvalidate ? (
-            <IconButton onClick={(e) => handleInvalidate(e, rowId)} aria-label="remove done" color="error">
+            <IconButton onClick={(e) => handleInvalidate(e, row)} aria-label="remove done" color="error">
                 <CloseIcon />
             </IconButton>
         ):(
           null
         )}
         { !isValidate && handleValidate ? (
-            <IconButton onClick={(e) => handleValidate(e, rowId)} aria-label="done" color="success">
+            <IconButton onClick={(e) => handleValidate(e, row)} aria-label="done" color="success">
                 <DoneIcon />
             </IconButton>
         ):(
           null
         )}
         { handleEdit ? (
-            <IconButton onClick={(e) => handleEdit(e, rowId)} aria-label="edit" color="info">
+            <IconButton onClick={(e) => handleEdit(e, row)} aria-label="edit" color="info">
                 <EditIcon />
             </IconButton>
         ):(
             null
         )}
-        { handleDelete ? (
-            <IconButton onClick={(e) => handleDelete(e, rowId)} aria-label="delete" color="error">
+        { handleDelete && !isValidate ? (
+            <IconButton onClick={(e) => handleDelete(e, row)} aria-label="delete" color="error">
                 <DeleteIcon />
             </IconButton>
         ):(

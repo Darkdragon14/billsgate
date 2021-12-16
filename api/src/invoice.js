@@ -1,7 +1,7 @@
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const { now } = require('sequelize/lib/utils');
 const model = require('../models');
-const { invoice, userInvoice } = model;
+const { bank, invoice, userInvoice } = model;
 const myFilter = require('./utils/filter');
 const mergeInvoicesAndUser = require('./utils/mergeInvoicesAndUser');
 
@@ -207,10 +207,24 @@ router.put('/:id', async (req, res) => {
  */
  router.patch('/:invoiceId/:userId', async (req, res) => {
   try {
+    
     let paymentDate = now();
+    let operation = req.body.amount <= 0 ? 'amount + ' + req.body.amount.substring(1) : 'amount - ' + req.body.amount;
     if (req.body.invalidate) {
       paymentDate = null;
+      operation = req.body.amount <= 0 ? 'amount - ' + req.body.amount.substring(1) : 'amount + ' + req.body.amount;
     }
+    await bank.update(
+      {
+        amount: literal(operation)
+      }, 
+      {
+        where: {
+          userId: req.params.userId
+        },
+        limit : 1
+      }
+    )
     await userInvoice.update(
       {
         paymentDate: paymentDate

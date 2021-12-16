@@ -16,7 +16,8 @@ export default function ModalInvoice(props) {
       maxWidth="md"
     >
       <DialogTitle>
-        Create a new Invoice
+        {invoiceToModified ? 'Update an ' : 'Create a new '}
+        Invoice
       </DialogTitle>
       <DialogContent>
         <FormInvoice invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={userId} handleClose={handleClose} />

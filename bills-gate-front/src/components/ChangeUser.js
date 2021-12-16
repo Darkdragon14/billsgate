@@ -12,8 +12,9 @@ import { blue } from '@mui/material/colors';
 export default function ChangeUser(props) {
   const { users, onClose, open, setUser } = props;
 
-  const handleListItemClick = (user) => {
-    setUser(user);
+  const handleListItemClick = index => {
+    localStorage.setItem('userId', index);
+    setUser(users[index]);
     onClose();
   };
 
@@ -21,8 +22,8 @@ export default function ChangeUser(props) {
     <Dialog onClose={onClose} open={open}>
       <DialogTitle>Select an user</DialogTitle>
       <List sx={{ pt: 0 }}>
-        {users.map((user) => (
-          <ListItem button onClick={() => handleListItemClick(user)} key={user.id}>
+        {users.map((user, index) => (
+          <ListItem button onClick={() => handleListItemClick(index)} key={user.id}>
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
                 <PersonIcon />

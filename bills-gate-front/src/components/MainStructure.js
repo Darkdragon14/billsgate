@@ -74,7 +74,7 @@ export default function MainStructure() {
   React.useEffect(() => {
     api('get', '/user/all').then(response => {
       setUsers(response.data);
-      setUser(response.data[0]);
+      setUser(localStorage.getItem('userid') ? response.data[localStorage.getItem('userid')] : response.data[0]);
     });
   }, [])
 

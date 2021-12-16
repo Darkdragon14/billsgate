@@ -13,7 +13,8 @@ const FieldsFormInvoice = [
         id: 'amount',
         label: 'Amount',
         type: 'number',
-        required: true
+        required: true,
+        info: 'For incomming money need a -'
       },
       {
         id: 'dueDate',
@@ -79,12 +80,12 @@ const FieldsFormInvoice = [
           }
         ]
       },
-      {
+      /*{
         id: 'paymentDate',
         label: 'Payment Date',
         type: 'date',
         required: false
-      }
+      }*/
     ]
   }
 ];

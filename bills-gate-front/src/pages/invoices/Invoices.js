@@ -17,8 +17,7 @@ function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, 
     dueDate,
     paymentDateUser,
     paymentDate,
-    isPayer,
-    cellEditMode: ''
+    isPayer
   };
 }
 
@@ -92,9 +91,9 @@ export default function Invoices(props) {
   }
   
   // For the Modal Create invoice
-  const handleEditInvoice = (e, invoiceId) => {
-    if (invoiceId) {
-      api('get', `/invoice/${invoiceId}`).then(response => {
+  const handleEditInvoice = (e, row) => {
+    if (row && row.id) {
+      api('get', `/invoice/${row.id}`).then(response => {
         setInvoiceToModified(response.data.invoice);
         setUserInvoicesToModified(response.data.userInvoices);
         setOpen(true);
@@ -111,27 +110,27 @@ export default function Invoices(props) {
     getInvoices();
   };
 
-  const handleValidateInvoice = (e, rowId) => {
+  const handleValidateInvoice = (e, row) => {
     e.preventDefault();
-    api('patch', '/invoice/' + rowId + '/' + user.id).then(result => {
+    api('patch', '/invoice/' + row.id + '/' + user.id, null, null, {amount: row.dueAmount}).then(result => {
       getInvoices();
     }).catch(err => {
       console.error(err);
     })
   }
 
-  const handleInvalidateInvoice = (e, rowId) => {
+  const handleInvalidateInvoice = (e, row) => {
     e.preventDefault();
-    api('patch', '/invoice/' + rowId + '/' + user.id, null, null, {invalidate: true}).then(result => {
+    api('patch', '/invoice/' + row.id + '/' + user.id, null, null, {amount: row.dueAmount, invalidate: true}).then(result => {
       getInvoices();
     }).catch(err => {
       console.error(err);
     })
   }
 
-  const handleDeleteInvoice = (e, rowId) => {
+  const handleDeleteInvoice = (e, row) => {
     e.preventDefault();
-    api('delete', '/invoice/' + rowId).then(result => {
+    api('delete', '/invoice/' + row.id).then(() => {
       getInvoices();
     }).catch(err => {
       console.error(err);

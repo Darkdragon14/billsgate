@@ -65,8 +65,9 @@ const router = require('express').Router();
     });
     if (banks.length !== 0) {
       res.status(200).send(banks);
+    } else {
+      res.status(404).send({message: 'No bank found for this user'});
     }
-    res.status(404).send({message: 'No bank found for this user'});
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -125,7 +126,7 @@ const router = require('express').Router();
  */
  router.put('/:id', async (req, res) => {
   try {
-    await user.update({...req.body}, {where: {id: req.params.id}});
+    await bank.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
@@ -159,8 +160,9 @@ router.delete('/:id', async (req, res) => {
         }
       });
       res.sendStatus(204);
+    } else {
+      res.status(400).send({message: 'Miss the userId'});
     }
-    res.status(400).send({message: 'Miss the userId'});
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});

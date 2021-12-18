@@ -41,6 +41,7 @@ app.use('/bank', require('./src/bank'));
 app.use('/invoice', require('./src/invoice'));
 app.use('/company', require('./src/company'));
 app.use('/transaction', require('./src/transaction'));
+app.use('/trade', require('./src/trade'));
 
 const port = 8000;
 

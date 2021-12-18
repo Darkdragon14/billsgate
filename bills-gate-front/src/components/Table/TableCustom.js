@@ -56,6 +56,7 @@ export default function TableCustom(props) {
                 >
                     <TableHeadCustom
                         headCells={columns}
+                        needColumnAction={handleValidate || handleInvalidate || handleEdit || handleDelete ? true : false}
                     />
                     <TableBody>
                     {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
@@ -69,14 +70,18 @@ export default function TableCustom(props) {
                                     data={row[column.id]}
                                 />
                             ))}
-                            <CellAction
-                                isValidate={row[FieldToValidate]}
-                                row={row}
-                                handleValidate={handleValidate}
-                                handleInvalidate={handleInvalidate}
-                                handleEdit={handleEdit}
-                                handleDelete={handleDelete}
-                            />
+                            { handleValidate || handleInvalidate || handleEdit || handleDelete ? (
+                                <CellAction
+                                    isValidate={row[FieldToValidate]}
+                                    row={row}
+                                    handleValidate={handleValidate}
+                                    handleInvalidate={handleInvalidate}
+                                    handleEdit={handleEdit}
+                                    handleDelete={handleDelete}
+                                />
+                            ):(
+                                null
+                            )}
                         </TableRow>
                         
                     ))}

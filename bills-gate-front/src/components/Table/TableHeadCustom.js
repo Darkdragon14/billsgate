@@ -4,7 +4,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
 export default function TableHeadCustom(props) {
-    const { headCells } = props;
+    const { headCells, needColumnAction } = props;
   
     return (
       <TableHead>
@@ -18,7 +18,11 @@ export default function TableHeadCustom(props) {
               {headCell.label}
             </TableCell>
           ))}
-          <TableCell align='center' padding='normal'>Actions</TableCell>
+          { needColumnAction ? (
+            <TableCell align='center' padding='normal'>Actions</TableCell>
+          ):(
+            null
+          )}
         </TableRow>
       </TableHead>
     );

@@ -39,7 +39,7 @@ export default function TableTitle(props) {
             >
                 {title}
             </Typography>
-            { fieldsFilter.length > 0 ? (
+            { fieldsFilter && fieldsFilter.length > 0 ? (
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Filter list">
                         <IconButton onClick={handleOpenFilterMenu}>

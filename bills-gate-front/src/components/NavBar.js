@@ -46,7 +46,7 @@ export default function NavBar() {
       <ListItemLink to="/home" primary="Home" icon={<HomeIcon />} />
       <ListItemLink to="/banks" primary="Banks" icon={<AccountBalanceIcon />} />
       <ListItemLink to="/invoices" primary="Invoices" icon={<FileCopyIcon />} />
-      <ListItemLink to="/trade" primary="Trades" icon={<PeopleAltIcon />} />
+      <ListItemLink to="/trades" primary="Trades" icon={<PeopleAltIcon />} />
       <ListItemLink to="/companies" primary="Companies" icon={<BusinessIcon />} />
     </List>
   );

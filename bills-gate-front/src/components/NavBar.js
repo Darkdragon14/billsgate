@@ -10,6 +10,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import HomeIcon from '@mui/icons-material/Home';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import ListItem from '@mui/material/ListItem';
 
 function ListItemLink(props) {
   const { icon, primary, to } = props;
@@ -42,12 +43,13 @@ ListItemLink.propTypes = {
 
 export default function NavBar() {
   return (
-    <List>
+    <List sx={{ height: '100%'}}>
       <ListItemLink to="/home" primary="Home" icon={<HomeIcon />} />
       <ListItemLink to="/banks" primary="Banks" icon={<AccountBalanceIcon />} />
       <ListItemLink to="/invoices" primary="Invoices" icon={<FileCopyIcon />} />
       <ListItemLink to="/trades" primary="Trades" icon={<PeopleAltIcon />} />
       <ListItemLink to="/companies" primary="Companies" icon={<BusinessIcon />} />
+      <ListItem sx={{ position: 'absolute', bottom: '0', justifyContent: 'center', fontSize: '10px' }}>v {process.env.REACT_APP_VERSION}</ListItem>
     </List>
   );
 }

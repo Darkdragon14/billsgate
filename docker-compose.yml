@@ -1,0 +1,38 @@
+version: "3"
+
+services: 
+
+  back:
+    image: billsgate-api
+    build: ./api/
+    ports: 
+      - 8000:8000
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: toor
+      DB_NAME: billsgate
+      DB_HOSTNAME: mysql
+    restart: always
+    depends_on:
+      - mysql
+
+  front:
+    image: billsgate-front
+    build: ./bills-gate-front
+    restart: always
+    ports: 
+      - 3000:3000
+    
+  mysql:
+    image: mysql:5.7
+    ports: 
+      - 3306:3306
+    volumes:
+      - billsgate_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: billsgate
+
+volumes:
+  billsgate_data: {}

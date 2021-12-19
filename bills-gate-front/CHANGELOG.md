@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](///compare/v0.1.0...v0.1.1) (2021-12-19)
+
+
+### Features
+
+* add docker fab9894
+* add stand-version 6667177
+* add stand-version a97667e
+* add version number 8bcc6a0
+
 ## 0.1.0 (2021-12-19)
 
 

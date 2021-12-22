@@ -8,22 +8,22 @@ export default function Trades(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
 
-  const getTrades = (filter = null) => {
-    let path = '/trade/all';
-    let method = 'get';
-    api(method, path, [], {userId: user.id}, filter).then(trades => {
-      setRows(trades.data);
-    }).catch(err => {
-      console.error(err);
-    });
-  };
-
-  React.useEffect(() => {
+  const getTrades = React.useCallback((filter = null) => {
     if (user) {
-      getTrades();
+      let path = '/trade/all';
+      let method = 'get';
+      api(method, path, [], {userId: user.id}, filter).then(trades => {
+        setRows(trades.data);
+      }).catch(err => {
+        console.error(err);
+      });
     }
   }, [user]);
   
+  React.useEffect(() => {
+    getTrades();
+  }, [getTrades])
+
   return (
     <Box sx={{ width: '90%', m: 'auto' }}>
       <TableCustom

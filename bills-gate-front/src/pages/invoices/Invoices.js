@@ -33,36 +33,36 @@ export default function Invoices(props) {
   const [open, setOpen] = React.useState(false);
   const [invoiceToModified, setInvoiceToModified] = React.useState(null);
 
-  const getInvoices = (filter = null) => {
-    let path = '/invoice/all';
-    let method = 'get';
-    if (filter) {
-      path = 'invoice/filter'
-      method = 'post'
-    }
-    api(method, path, [], {userId: user.id}, filter).then(invoices => {
-      const newRows = invoices.data.map((invoice) => {
-        const dueAmount = invoice.amount * invoice.weight;
-        const dueDate = invoice.dueDate.substring(0, 10);
-        let paymentDateUser = invoice.paymentDate;
-        if (paymentDateUser) {
-          paymentDateUser = paymentDateUser.substring(0, 10);
-        }
-        const paymentDate = invoice.paymentDate ? invoice.paymentDate.substring(0, 10) : null;
-        return createData(invoice.id, invoice.name, invoice.amount.toFixed(2), dueAmount.toFixed(2), dueDate, paymentDateUser, paymentDate, invoice.isPayer);
+  const getInvoices = React.useCallback((filter = null) => {
+    if (user) {
+      let path = '/invoice/all';
+      let method = 'get';
+      if (filter) {
+        path = 'invoice/filter'
+        method = 'post'
+      }
+      api(method, path, [], {userId: user.id}, filter).then(invoices => {
+        const newRows = invoices.data.map((invoice) => {
+          const dueAmount = invoice.amount * invoice.weight;
+          const dueDate = invoice.dueDate.substring(0, 10);
+          let paymentDateUser = invoice.paymentDate;
+          if (paymentDateUser) {
+            paymentDateUser = paymentDateUser.substring(0, 10);
+          }
+          const paymentDate = invoice.paymentDate ? invoice.paymentDate.substring(0, 10) : null;
+          return createData(invoice.id, invoice.name, invoice.amount.toFixed(2), dueAmount.toFixed(2), dueDate, paymentDateUser, paymentDate, invoice.isPayer);
+        });
+        setRows(newRows);
+      }).catch(err => {
+        console.error(err);
       });
-      setRows(newRows);
-    }).catch(err => {
-      console.error(err);
-    });
-  };
+    }
+  }, [user]);
 
   React.useEffect(() => {
-    if (user) {
-      getInvoices();
-    }
+    getInvoices();
     setFieldsFilter(FieldsFilterInvoice);
-  }, [user]);
+  }, [getInvoices]);
 
   // For the filter
   const handleSetFieldsFilter = async (fieldFilterId, value) => {

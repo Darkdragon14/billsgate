@@ -30,29 +30,28 @@ export default function Companies(props) {
   const [open, setOpen] = React.useState(false);
   const [companyToModified, setCompanyToModified] = React.useState(null);
 
-  const getCompanies = (filter = null) => {
-    let path = '/company/all';
-    let method = 'get';
-    if (filter) {
-      path = 'bank/filter'
-      method = 'post'
-    }
-    api(method, path, [], {userId: user.id}, filter).then(companies => {
-      const newRows = companies.data.map(company => {
-        return createData(company.id, company.name, company.address, company.city, company.phone, company.email);
+  const getCompanies = React.useCallback((filter = null) => {
+    if (user) {
+      let path = '/company/all';
+      let method = 'get';
+      if (filter) {
+        path = 'bank/filter'
+        method = 'post'
+      }
+      api(method, path, [], {userId: user.id}, filter).then(companies => {
+        const newRows = companies.data.map(company => {
+          return createData(company.id, company.name, company.address, company.city, company.phone, company.email);
+        });
+        setRows(newRows);
+      }).catch(err => {
+        console.error(err);
       });
-      setRows(newRows);
-    }).catch(err => {
-      console.error(err);
-    });
-  };
+    }
+  }, [user]);
 
   React.useEffect(() => {
-    if (user) {
-      getCompanies();
-    }
-    // setFieldsFilter(FieldsFilterBanks);
-  }, [user]);
+    getCompanies();
+  }, [getCompanies]);
 
   // For the filter
   const handleSetFieldsFilter = async (fieldFilterId, value) => {

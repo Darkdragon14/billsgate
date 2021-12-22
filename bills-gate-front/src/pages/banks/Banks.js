@@ -29,29 +29,29 @@ export default function Banks(props) {
   const [open, setOpen] = React.useState(false);
   const [bankToModified, setBankToModified] = React.useState(null);
 
-  const getBanks = (filter = null) => {
-    let path = '/bank/all';
-    let method = 'get';
-    if (filter) {
-      path = 'bank/filter'
-      method = 'post'
-    }
-    api(method, path, [], {userId: user.id}, filter).then(banks => {
-      const newRows = banks.data.map(bank => {
-        return createData(bank.id, bank.name, bank.iban, bank.amount.toFixed(2), bank.updatedAt);
+  const getBanks = React.useCallback((filter = null) => {
+    if (user) {
+      let path = '/bank/all';
+      let method = 'get';
+      if (filter) {
+        path = 'bank/filter'
+        method = 'post'
+      }
+      api(method, path, [], {userId: user.id}, filter).then(banks => {
+        const newRows = banks.data.map(bank => {
+          return createData(bank.id, bank.name, bank.iban, bank.amount.toFixed(2), bank.updatedAt);
+        });
+        setRows(newRows);
+      }).catch(err => {
+        console.error(err);
       });
-      setRows(newRows);
-    }).catch(err => {
-      console.error(err);
-    });
-  };
+    }
+  }, [user]);
 
   React.useEffect(() => {
-    if (user) {
-      getBanks();
-    }
+    getBanks();
     // setFieldsFilter(FieldsFilterBanks);
-  }, [user]);
+  }, [getBanks]);
 
   // For the filter
   const handleSetFieldsFilter = async (fieldFilterId, value) => {

@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
 export default function MyField(props) {
-  const { id, field, value, defaultValue, error, handleChange } = props;
+  const { id, field, value, error, handleChange } = props;
 
   return (
     <TextField

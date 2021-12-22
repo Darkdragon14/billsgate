@@ -66,6 +66,7 @@ export default function TableCustom(props) {
                         >
                             {columns.map(column => (
                                 <Cell 
+                                    key={row.id + column.id}
                                     columnType={column.type}
                                     data={row[column.id]}
                                 />

@@ -2,11 +2,14 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import ModalInvoice from './ModalInvoice';
+import dayjs from 'dayjs';
+import Modal from '../../components/Modal/Modal';
 import TableCustom from '../../components/Table/TableCustom'
 import api from '../../utils/api';
 import FieldsTableInvoice from './config/FieldsTableInvoice';
 import FieldsFilterInvoice from './config/FieldsFilterInvoice';
+import FieldsFormInvoice from './config/FieldsFormInvoice';
+import ValidateFormInvoice from './config/ValidateFormInvoice';
 
 function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, paymentDate, isPayer) {
   return {
@@ -29,7 +32,6 @@ export default function Invoices(props) {
   //For the modal create invoice
   const [open, setOpen] = React.useState(false);
   const [invoiceToModified, setInvoiceToModified] = React.useState(null);
-  const [userInvoicesToModified, setUserInvoicesToModified] = React.useState(null)
 
   const getInvoices = (filter = null) => {
     let path = '/invoice/all';
@@ -94,8 +96,16 @@ export default function Invoices(props) {
   const handleEditInvoice = (e, row) => {
     if (row && row.id) {
       api('get', `/invoice/${row.id}`).then(response => {
-        setInvoiceToModified(response.data.invoice);
-        setUserInvoicesToModified(response.data.userInvoices);
+        response.data.userInvoices.forEach(userInvoice => {
+          userInvoice.isPayer =  userInvoice.isPayer ? 1 : 0;
+        })
+        if (!response.data.invoice.companyId) {
+          response.data.invoice.companyId = 0;
+        }
+        if (response.data.invoice.dueDate) {
+          response.data.invoice.dueDate = dayjs(response.data.invoice.dueDate).format('YYYY-MM-DD')
+        }
+        setInvoiceToModified({...response.data.invoice, userInvoices: response.data.userInvoices});
         setOpen(true);
       });
     } else {
@@ -106,7 +116,6 @@ export default function Invoices(props) {
   const handleClose = () => {
     setOpen(false);
     setInvoiceToModified(null);
-    setUserInvoicesToModified(null);
     getInvoices();
   };
 
@@ -149,7 +158,15 @@ export default function Invoices(props) {
           Add invoice
         </Button>
       </Grid>
-      <ModalInvoice open={open} invoiceToModified={invoiceToModified} userInvoicesToModified={userInvoicesToModified} userId={user ? user.id : 0} handleClose={handleClose} />
+      <Modal 
+        title="Invoice"
+        open={open} 
+        fieldsFrom={FieldsFormInvoice}
+        elementToModified={invoiceToModified}
+        userId={user ? user.id : 0} 
+        validateForm={ValidateFormInvoice}
+        handleClose={handleClose} 
+      />
       <TableCustom
         title="Invoices" 
         rows={rows}

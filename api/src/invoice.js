@@ -128,10 +128,16 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
-    const newInvoice = await invoice.create({...req.body.invoice});
-    for (const linkInvoiceUser of req.body.listLinkUserInvoice) {
-      linkInvoiceUser.invoiceId = newInvoice.dataValues.id;
-      await userInvoice.create({...linkInvoiceUser});
+    const newUserInvoices = req.body.userInvoices;
+    delete req.body.userInvoices;
+    delete req.body.userId;
+    if (req.body.companyId === 0) {
+      delete req.body.companyId;
+    }
+    const newInvoice = await invoice.create({...req.body});
+    for (const newUserInvoice of newUserInvoices) {
+      newUserInvoice.invoiceId = newInvoice.dataValues.id;
+      await userInvoice.create({...newUserInvoice});
     }
     res.status(201).send({id: newInvoice.dataValues.id, message: 'Invoice created successfully'});
   } catch (error) {
@@ -179,13 +185,18 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   try {
-    console.log(req.body);
-    if (req.body.invoice) {
-      await invoice.update(req.body.invoice, {where: {id: req.params.id}});
+    const listLinkUserInvoices = req.body.listLinkUserInvoices;
+    delete req.body.listLinkUserInvoices;
+    delete req.body.userId;
+    if (req.body.companyId === 0) {
+      delete req.body.companyId;
     }
-    if (req.body.listLinkUserInvoice && req.body.listLinkUserInvoice.length > 0) {
-      for (const linkInvoiceUser of req.body.listLinkUserInvoice) {
-        await userInvoice.update(linkInvoiceUser, {where: {[Op.and]: {id: linkInvoiceUser.id, invoiceId: req.params.id}}});
+    if (req.body) {
+      await invoice.update(req.body, {where: {id: req.params.id}});
+    }
+    if (listLinkUserInvoices && listLinkUserInvoices.length > 0) {
+      for (const linkUserInvoice of listLinkUserInvoices) {
+        await userInvoice.update(linkUserInvoice, {where: {[Op.and]: {id: linkUserInvoice.id, invoiceId: req.params.id}}});
       }
     }
     res.sendStatus(204);

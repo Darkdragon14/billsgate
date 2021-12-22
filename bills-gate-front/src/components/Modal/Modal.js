@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import Form from './Form';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function ModalInvoice(props) {
+export default function Modal(props) {
   const { title, open, fieldsFrom, elementToModified, userId, handleClose, validateForm } = props
 
   return (
@@ -19,7 +19,14 @@ export default function ModalInvoice(props) {
         {elementToModified ? 'Update a ' + title : 'Create a new ' + title}
       </DialogTitle>
       <DialogContent>
-        <Form title={title} fieldsFrom={fieldsFrom} elementToModified={elementToModified} userId={userId} handleClose={handleClose} validateForm={validateForm} />
+        <Form 
+          title={title} 
+          fieldsFrom={fieldsFrom} 
+          elementToModified={elementToModified} 
+          userId={userId} 
+          handleClose={handleClose} 
+          validateForm={validateForm} 
+        />
       </DialogContent>
       <DialogActions>
         <Button type="submit" form="create" color="success">

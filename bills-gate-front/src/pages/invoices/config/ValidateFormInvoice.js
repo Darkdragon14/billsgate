@@ -4,10 +4,9 @@ import { oneVariableAtTrueInObject } from '../../../utils/objectFunction';
 /**
  * 
  * @param {object} invoice
- * @param {array<object>} userInvoices
  * @return {object}
  */
-export default function ValidateFormInvoice(invoice, userInvoices) {
+export default function ValidateFormInvoice(invoice) {
     const errorFields =  {
         error: false,
         totalWeight: false,
@@ -20,7 +19,7 @@ export default function ValidateFormInvoice(invoice, userInvoices) {
     };
 
     let totalWeight = 0;
-    userInvoices.forEach(userInvoice => {
+    invoice.userInvoices.forEach(userInvoice => {
         totalWeight += parseFloat(userInvoice.weight);
         errorFields.userInvoices.push({
             userId: !(userInvoice.userId > 0),

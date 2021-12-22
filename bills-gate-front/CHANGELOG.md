@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](///compare/v0.1.1...v0.1.2) (2021-12-22)
+
+
+### Features
+
+* add the title of the application bc1c45f
+
+
+### Bug Fixes
+
+* add a defaultValue for company 4c0c0fa
+* add a key for each cell b6b8ac2
+* use callback of react to diabled the warning in the console 74976d2
+
 ### [0.1.1](///compare/v0.1.0...v0.1.1) (2021-12-19)
 
 

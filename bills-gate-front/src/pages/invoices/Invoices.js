@@ -11,19 +11,6 @@ import FieldsFilterInvoice from './config/FieldsFilterInvoice';
 import FieldsFormInvoice from './config/FieldsFormInvoice';
 import ValidateFormInvoice from './config/ValidateFormInvoice';
 
-function createData(id, name, totalAmount, dueAmount, dueDate, paymentDateUser, paymentDate, isPayer) {
-  return {
-    id,
-    name,
-    totalAmount,
-    dueAmount,
-    dueDate,
-    paymentDateUser,
-    paymentDate,
-    isPayer
-  };
-}
-
 export default function Invoices(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
@@ -42,17 +29,12 @@ export default function Invoices(props) {
         method = 'post'
       }
       api(method, path, [], {userId: user.id}, filter).then(invoices => {
-        const newRows = invoices.data.map((invoice) => {
-          const dueAmount = invoice.amount * invoice.weight;
-          const dueDate = invoice.dueDate.substring(0, 10);
-          let paymentDateUser = invoice.paymentDate;
-          if (paymentDateUser) {
-            paymentDateUser = paymentDateUser.substring(0, 10);
-          }
-          const paymentDate = invoice.paymentDate ? invoice.paymentDate.substring(0, 10) : null;
-          return createData(invoice.id, invoice.name, invoice.amount.toFixed(2), dueAmount.toFixed(2), dueDate, paymentDateUser, paymentDate, invoice.isPayer);
+        invoices.data.forEach(invoice => {
+          invoice.totalAmount = invoice.amount.toFixed(2);
+          invoice.dueAmount = (invoice.amount * invoice.weight).toFixed(2);
         });
-        setRows(newRows);
+        console.log(invoices.data);
+        setRows(invoices.data);
       }).catch(err => {
         console.error(err);
       });

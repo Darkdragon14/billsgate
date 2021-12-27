@@ -8,23 +8,10 @@ import api from '../../utils/api';
 import FieldsTableBank from './config/FieldsTableBank';
 import FieldsFormBank from './config/FieldsFormBank';
 import ValidateFormBank from './config/ValidateFormBank';
-// import FieldsFilterBank from './config/FieldsFilterBank';
-
-function createData(id, name, iban, amount, updatedAt) {
-  return {
-    id,
-    name,
-    iban,
-    amount,
-    updatedAt
-  };
-}
 
 export default function Banks(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
-  // Management Filter
-  const [fieldsFilter, setFieldsFilter] = React.useState([]);
   //For the modal create invoice
   const [open, setOpen] = React.useState(false);
   const [bankToModified, setBankToModified] = React.useState(null);
@@ -38,10 +25,7 @@ export default function Banks(props) {
         method = 'post'
       }
       api(method, path, [], {userId: user.id}, filter).then(banks => {
-        const newRows = banks.data.map(bank => {
-          return createData(bank.id, bank.name, bank.iban, bank.amount.toFixed(2), bank.updatedAt);
-        });
-        setRows(newRows);
+        setRows(banks.data);
       }).catch(err => {
         console.error(err);
       });
@@ -50,36 +34,7 @@ export default function Banks(props) {
 
   React.useEffect(() => {
     getBanks();
-    // setFieldsFilter(FieldsFilterBanks);
   }, [getBanks]);
-
-  // For the filter
-  const handleSetFieldsFilter = async (fieldFilterId, value) => {
-    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
-      if (fieldFilter.id === fieldFilterId){
-        fieldFilter.value = value;
-        fieldFilter.ignore = false;
-        return fieldFilter;
-      }
-      return fieldFilter;
-    });
-    setFieldsFilter(newFieldsFilter);
-    getBanks(newFieldsFilter);
-  }
-
-  const handleResetFieldsFilter = () => {
-    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
-      fieldFilter.ignore = true;
-      if (typeof fieldFilter.value === 'boolean') {
-        fieldFilter.value = false;
-      } else {
-        fieldFilter.value = '';
-      }
-      return fieldFilter;
-    });
-    setFieldsFilter(newFieldsFilter);
-    getBanks();
-  }
   
   // For the Modal Create invoice
   const handleEditBank = (e, row) => {
@@ -133,9 +88,6 @@ export default function Banks(props) {
         title="Banks" 
         rows={rows}
         columns={FieldsTableBank}
-        fieldsFilter={fieldsFilter}
-        handleSetFieldsFilter={handleSetFieldsFilter}
-        handleResetFieldsFilter={handleResetFieldsFilter}
         handleEdit={handleEditBank}
         handleDelete={handleDeleteBank}
       />

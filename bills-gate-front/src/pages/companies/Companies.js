@@ -8,24 +8,10 @@ import api from '../../utils/api';
 import FieldsTableCompany from './config/FieldsTableCompany';
 import FieldsFormCompany from './config/FieldsFormCompany';
 import ValidateFormCompany from './config/ValidateFormCompany';
-// import FieldsFilterBank from './config/FieldsFilterBank';
-
-function createData(id, name, address, city, phone, email) {
-  return {
-    id,
-    name,
-    address,
-    city,
-    phone,
-    email
-  };
-}
 
 export default function Companies(props) {
   const { user } = props;
   const [rows, setRows] = React.useState([]);
-  // Management Filter
-  const [fieldsFilter, setFieldsFilter] = React.useState([]);
   //For the modal create invoice
   const [open, setOpen] = React.useState(false);
   const [companyToModified, setCompanyToModified] = React.useState(null);
@@ -39,10 +25,7 @@ export default function Companies(props) {
         method = 'post'
       }
       api(method, path, [], {userId: user.id}, filter).then(companies => {
-        const newRows = companies.data.map(company => {
-          return createData(company.id, company.name, company.address, company.city, company.phone, company.email);
-        });
-        setRows(newRows);
+        setRows(companies.data);
       }).catch(err => {
         console.error(err);
       });
@@ -52,34 +35,6 @@ export default function Companies(props) {
   React.useEffect(() => {
     getCompanies();
   }, [getCompanies]);
-
-  // For the filter
-  const handleSetFieldsFilter = async (fieldFilterId, value) => {
-    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
-      if (fieldFilter.id === fieldFilterId){
-        fieldFilter.value = value;
-        fieldFilter.ignore = false;
-        return fieldFilter;
-      }
-      return fieldFilter;
-    });
-    setFieldsFilter(newFieldsFilter);
-    getCompanies(newFieldsFilter);
-  }
-
-  const handleResetFieldsFilter = () => {
-    const newFieldsFilter = fieldsFilter.map(fieldFilter => {
-      fieldFilter.ignore = true;
-      if (typeof fieldFilter.value === 'boolean') {
-        fieldFilter.value = false;
-      } else {
-        fieldFilter.value = '';
-      }
-      return fieldFilter;
-    });
-    setFieldsFilter(newFieldsFilter);
-    getCompanies();
-  }
   
   // For the Modal Create invoice
   const handleEditCompany = (e, row) => {
@@ -133,9 +88,6 @@ export default function Companies(props) {
         title="Companies" 
         rows={rows}
         columns={FieldsTableCompany}
-        fieldsFilter={fieldsFilter}
-        handleSetFieldsFilter={handleSetFieldsFilter}
-        handleResetFieldsFilter={handleResetFieldsFilter}
         handleEdit={handleEditCompany}
         handleDelete={handleDeleteCompany}
       />

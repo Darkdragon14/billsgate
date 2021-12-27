@@ -11,6 +11,7 @@ function mergeInvoicesAndUser(invoices) {
     invoice.dataValues.paymentDateUser = invoice.dataValues.userInvoices[0].dataValues.paymentDate;
     invoice.dataValues.dueAmount = invoice.dataValues.amount * invoice.dataValues.userInvoices[0].dataValues.weight;
     delete invoice.dataValues.userInvoices[0].dataValues.id;
+    delete invoice.dataValues.userInvoices[0].dataValues.paymentDate;
     const row = {...invoice.dataValues, ...invoice.dataValues.userInvoices[0].dataValues}
     delete row.userInvoices;
     return row;

@@ -19,7 +19,5 @@ export default function ValidateFormBank(bank) {
 
     errorFields.error = oneVariableAtTrueInObject(errorFields.bank);
 
-    console.log(errorFields);
-
     return(errorFields);
 }

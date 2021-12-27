@@ -91,7 +91,6 @@ export default function Form(props) {
 
   const handleChange = (e, fieldId, index, sectionId) => {
     e.preventDefault();
-    console.log(e.target.value)
     if(sectionId){
       const newSubElement = element;
       newSubElement[sectionId][index][fieldId] = e.target.value;

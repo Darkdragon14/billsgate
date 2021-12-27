@@ -33,7 +33,6 @@ export default function Invoices(props) {
           invoice.totalAmount = invoice.amount.toFixed(2);
           invoice.dueAmount = (invoice.amount * invoice.weight).toFixed(2);
         });
-        console.log(invoices.data);
         setRows(invoices.data);
       }).catch(err => {
         console.error(err);

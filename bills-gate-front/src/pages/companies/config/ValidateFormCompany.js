@@ -17,7 +17,5 @@ export default function ValidateFormCompany(company) {
 
     errorFields.error = oneVariableAtTrueInObject(errorFields.company);
 
-    console.log(errorFields);
-
     return(errorFields);
 }

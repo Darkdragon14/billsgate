@@ -12,7 +12,9 @@ const FieldsTableInvoice = [
     {
       id: 'amount',
       label: 'Amount',
-      type: 'number'
+      type: 'number',
+      warning: 50,
+      error: 0
     },
     {
       id: 'updatedAt',

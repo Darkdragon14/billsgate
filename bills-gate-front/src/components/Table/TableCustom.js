@@ -6,10 +6,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import useTheme from "@mui/material/styles/useTheme";
 import TableTitle from './TableTitle';
 import TableHeadCustom from './TableHeadCustom';
 import Cell from './Cell';
 import CellAction from './CellAction';
+import { checkField } from '../../utils/checkField';
 
 export default function TableCustom(props) {
     const {
@@ -17,6 +19,8 @@ export default function TableCustom(props) {
         rows, 
         columns,
         FieldToValidate,
+        FieldToWarning,
+        FieldToError,
         fieldsFilter,
         handleSetFieldsFilter,
         handleResetFieldsFilter,
@@ -27,6 +31,7 @@ export default function TableCustom(props) {
     } = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [theme] = React.useState(useTheme());
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -59,33 +64,51 @@ export default function TableCustom(props) {
                         needColumnAction={handleValidate || handleInvalidate || handleEdit || handleDelete ? true : false}
                     />
                     <TableBody>
-                    {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-                        <TableRow
-                            hover
-                            key={row.id}
-                        >
-                            {columns.map(column => (
-                                <Cell 
-                                    key={row.id + column.id}
-                                    columnType={column.type}
-                                    data={row[column.id]}
-                                />
-                            ))}
-                            { handleValidate || handleInvalidate || handleEdit || handleDelete ? (
-                                <CellAction
-                                    isValidate={row[FieldToValidate]}
-                                    row={row}
-                                    handleValidate={handleValidate}
-                                    handleInvalidate={handleInvalidate}
-                                    handleEdit={handleEdit}
-                                    handleDelete={handleDelete}
-                                />
-                            ):(
-                                null
-                            )}
-                        </TableRow>
+                    {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                        let type = ''
+                        if (row[FieldToValidate]) {
+                            type = 'success'
+                        } 
                         
-                    ))}
+                        if (row[FieldToError] && type === '') {
+                            type = checkField(row[FieldToError], FieldToError, columns, 'error') ? 'error' : '';
+                        } 
+                        
+                        if (row[FieldToWarning] && type === '') {
+                            type = checkField(row[FieldToWarning], FieldToWarning, columns, 'warning') ? 'warning' : '';
+                        }
+                        
+                        const color = type !== '' ? theme.palette[type][theme.palette.mode] : '';
+                        
+                        return (
+                            <TableRow
+                                hover
+                                key={row.id}
+                            >
+                                {columns.map(column => (
+                                    <Cell
+                                        color={color}
+                                        key={row.id + column.id}
+                                        columnType={column.type}
+                                        data={row[column.id]}
+                                    />
+                                ))}
+                                { handleValidate || handleInvalidate || handleEdit || handleDelete ? (
+                                    <CellAction
+                                        isValidate={row[FieldToValidate]}
+                                        row={row}
+                                        handleValidate={handleValidate}
+                                        handleInvalidate={handleInvalidate}
+                                        handleEdit={handleEdit}
+                                        handleDelete={handleDelete}
+                                    />
+                                ):(
+                                    null
+                                )}
+                            </TableRow>
+                        )
+                        
+                    })}
                     {emptyRows > 0 && (
                         <TableRow
                         sx={{

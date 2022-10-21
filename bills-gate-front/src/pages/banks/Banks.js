@@ -24,7 +24,7 @@ export default function Banks(props) {
         path = 'bank/filter'
         method = 'post'
       }
-      api(method, path, [], {userId: user.id}, filter).then(banks => {
+      api(method, path, [], null, filter).then(banks => {
         setRows(banks.data);
       }).catch(err => {
         console.error(err);
@@ -56,7 +56,7 @@ export default function Banks(props) {
 
   const handleDeleteBank = (e, row) => {
     e.preventDefault();
-    api('delete', '/bank/' + row.id, null, null, {userId: user.id}).then(() => {
+    api('delete', '/bank/' + row.id).then(() => {
       getBanks();
     }).catch(err => {
       console.error(err);

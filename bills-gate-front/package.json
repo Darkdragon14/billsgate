@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.2.0",
     "@mui/material": "^5.2.2",
     "axios": "^0.24.0",
+    "axios-cookiejar-support": "^4.0.3",
     "dayjs": "^1.10.7",
     "ibantools": "^4.1.2",
     "react": "^17.0.2",
@@ -15,6 +16,7 @@
     "react-router-dom": "^6.0.2",
     "react-scripts": "5.0.1",
     "serve": "^13.0.2",
+    "tough-cookie": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
@@ -50,6 +52,9 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "standard-version": "^9.3.2"
+    "babel-plugin-named-exports-order": "0.0.2",
+    "prop-types": "^15.8.1",
+    "standard-version": "^9.3.2",
+    "webpack": "^5.74.0"
   }
 }

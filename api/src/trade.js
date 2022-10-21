@@ -4,6 +4,8 @@ const { user, invoice, userInvoice } = model;
 const dayjs = require('dayjs');
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * GET /trade/all
@@ -12,7 +14,7 @@ const router = require('express').Router();
  * @return {array<transactionAnswer>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
- router.get('/all', async (req, res) => {
+ router.get('/all', ensureLoggedIn, async (req, res) => {
     try {
         const trades = await userInvoice.findAll({
             include: [{
@@ -22,7 +24,7 @@ const router = require('express').Router();
                     where: {
                         [Op.and]: {
                             userId: {
-                                    [Op.ne]: req.query.userId
+                                    [Op.ne]: req.session.passport.user.id
                             },
                             paymentDate: null
                         }
@@ -35,7 +37,7 @@ const router = require('express').Router();
             }],
             where: {
                 [Op.and]: {
-                    userId: req.query.userId,
+                    userId: req.session.passport.user.id,
                     paymentDate: null
                 }
             }

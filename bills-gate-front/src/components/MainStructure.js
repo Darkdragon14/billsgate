@@ -10,7 +10,7 @@ import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import NavBar from './NavBar';
 import AppBar from './AppBar';
 import MyRouter from './MyRouter';
-import api from '../utils/api';
+import { getCookie, setCookie } from '../utils/cookieManager';
 
 const drawerWidth = 240;
 
@@ -63,8 +63,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MainStructure() {
   const [open, setOpen] = React.useState(false);
-  const [user, setUser] = React.useState(null);
-  const [users, setUsers] = React.useState([]);
+  const [user, setUser] = React.useState(getCookie('user'));
   const [theme, setTheme] = React.useState(createTheme({
     palette: {
       mode: localStorage.getItem('themeMode') ? localStorage.getItem('themeMode') : 'light',
@@ -72,11 +71,10 @@ export default function MainStructure() {
   }));
 
   React.useEffect(() => {
-    api('get', '/user/all').then(response => {
-      setUsers(response.data);
-      setUser(localStorage.getItem('userId') ? response.data[localStorage.getItem('userId')] : response.data[0]);
-    });
-  }, [])
+    if (user) {
+      setCookie(`user=${JSON.stringify(user)}`);
+    }
+  }, [user]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -95,9 +93,8 @@ export default function MainStructure() {
           drawerwidth={drawerWidth} 
           theme={theme} 
           user={user} 
-          users={users}  
+          setUser={setUser}
           handleDrawerOpen={handleDrawerOpen}
-          setUser={setUser} 
           setTheme={setTheme}
         />
         <Drawer variant="permanent" open={open}>
@@ -107,11 +104,11 @@ export default function MainStructure() {
             </IconButton>
           </DrawerHeader>
           <Divider />
-          <NavBar />
+          <NavBar user={user} />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          <MyRouter user={user} />
+          <MyRouter user={user} setUser={setUser} />
         </Box>
       </Box>
     </ThemeProvider>

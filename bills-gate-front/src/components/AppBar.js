@@ -26,7 +26,7 @@ const AppBarStyle = styled(MuiAppBar, {
 }));
 
 export default function AppBar(props) {
-  const { open, drawerwidth, theme, user, users, setUser, setTheme, handleDrawerOpen} = props;
+  const { open, drawerwidth, theme, user, setUser, setTheme, handleDrawerOpen} = props;
 
   return (
     <AppBarStyle position="fixed" open={open} drawerwidth={drawerwidth} theme={theme}>
@@ -48,9 +48,8 @@ export default function AppBar(props) {
         </Typography>
         <MyAvatar 
           user={user} 
-          users={users} 
-          theme={theme}
           setUser={setUser}
+          theme={theme}
           setTheme={setTheme}
         />
       </Toolbar>

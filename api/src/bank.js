@@ -3,6 +3,8 @@ const model = require('../models');
 const { bank, user } = model;
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * All information for a bank
@@ -51,16 +53,15 @@ const router = require('express').Router();
  * GET /bank/all
  * @summary Return all bank of one user
  * @tags bank
- * @param {integer} userId.query.required - The user's id 
  * @return {array<bankAnswer>} 200 - success response - application/json
  * @return {error} 404 - Any bank was find for this user - application/json
  * @return {error} 500 - The server failed - application/json
  */
- router.get('/all', async (req, res) => {
+ router.get('/all', ensureLoggedIn, async (req, res) => {
   try {
     const banks = await bank.findAll({
       where: {
-        userId: req.query.userId
+        userId: req.session.passport.user.id
       }
     });
     if (banks.length !== 0) {
@@ -105,7 +106,7 @@ const router = require('express').Router();
  * @return {createBank} 201 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
- router.post('/', async (req, res) => {
+ router.post('/', ensureLoggedIn, async (req, res) => {
   try {
     if (req.body.companyId === 0) {
       delete req.body.companyId;
@@ -127,7 +128,7 @@ const router = require('express').Router();
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
- router.put('/:id', async (req, res) => {
+ router.put('/:id', ensureLoggedIn, async (req, res) => {
   try {
     if (req.body.companyId === 0) {
       delete req.body.companyId;
@@ -150,7 +151,7 @@ const router = require('express').Router();
 * @return {error} 400 - TMiss the userId - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureLoggedIn, async (req, res) => {
   try {
     if(req.body.userId){
       await bank.destroy({

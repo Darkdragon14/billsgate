@@ -5,7 +5,7 @@ const FieldsTableInvoice = [
       type: 'string'
     },
     {
-      id: 'totalAmount',
+      id: 'amount',
       label: 'Total amount',
       type: 'number'
     },

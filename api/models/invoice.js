@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       invoice.belongsTo(models.company, {
         foreignKey: 'companyId'
       });
+      invoice.belongsTo(models.recurringBill, {
+        foreignKey: 'recurringBillId'
+      });
       invoice.hasMany(models.transaction, {
         foreignKey: 'invoiceId'
       });

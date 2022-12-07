@@ -26,7 +26,11 @@ export default function Form(props) {
     const categoriesId = [];
     fieldsFrom.forEach((category, categoryId) => {
       category.fields.forEach((field, fieldId) => {
-        if(field.pathRequest && field.type === 'select' && fieldsFrom[categoryId].fields[fieldId].selectField.length === 1){
+        if(field.pathRequest && field.type === 'select' && fieldsFrom[categoryId].fields[fieldId].selectField.length === 0){
+          field.selectField.push({
+            value: 0,
+            label: `Select a ${field.label}`
+          });
           selectFields.push(field);
           categoriesId.push(categoryId);
           fieldsId.push(fieldId);
@@ -128,7 +132,7 @@ export default function Form(props) {
       setErrorFields(testValide);
     } else {
       const method = elementToModified ? 'put' : 'post';
-      const path = `/${title.toLowerCase()}/${elementToModified ? element.id : ''}`;
+      const path = `/${title.replace(' ', '').toLowerCase()}/${elementToModified ? element.id : ''}`;
       const body = { ...element, userId: userId};
       api(method, path, [], null, body).then(() => {
         handleClose();

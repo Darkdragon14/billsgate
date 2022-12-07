@@ -26,6 +26,8 @@ export default function Cell(props) {
                 data ? setValue(<Link href={'mailto:' + data}>{data}</Link>) : setValue(null);
                 break;
             case 'number':
+                setValue(data.toFixed(2).replace(/[.,]00$/, ""));
+                break;
             case 'string':
             default:
                 setValue(data);

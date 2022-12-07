@@ -4,13 +4,14 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import FilterListIcon from '@mui/icons-material/FilterList';
+  
 
 export default function TableTitle(props) {
     const { title, fieldsFilter, handleSetFieldsFilter, handleResetFieldsFilter } = props;
@@ -59,23 +60,23 @@ export default function TableTitle(props) {
                             horizontal: 'right',
                         }}
                     >
-                        <MenuItem>
+                        <ListItem>
                             <Typography textAlign="center">Filter</Typography>
-                        </MenuItem>
+                        </ListItem>
                         <Divider />
                         {fieldsFilter.map(fieldFilter => (
-                            <MenuItem key={fieldFilter.id}>
+                            <ListItem key={fieldFilter.id}>
                                 {fieldFilter.label} : 
                                 {fieldFilter.type === 'checkbox' ? (
                                     <Checkbox checked={fieldFilter.value} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.checked)} />
                                 ) : (
                                     <TextField value={fieldFilter.value} variant="standard" type={fieldFilter.type} onChange={(e) => handleSetFieldsFilter(fieldFilter.id, e.target.value)}/> 
                                 )}
-                            </MenuItem>
+                            </ListItem>
                         ))}
-                        <MenuItem>
+                        <ListItem>
                             <Button sx={{ margin: 'auto'}} onClick={handleResetFieldsFilter}>Reset Filter</Button>
-                        </MenuItem>
+                        </ListItem>
                     </Menu>
                 </Box>   
             ):(

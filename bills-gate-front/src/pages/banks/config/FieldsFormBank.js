@@ -47,12 +47,7 @@ const FieldsFormInvoice = [
         defaultValue: 0,
         pathRequest: '/company/all',
         warningMessage: 'We can\'t show you the list of companies, you can try later to add.',
-        selectField: [
-          {
-            value: 0,
-            label: 'Select a Company'
-          }
-        ]
+        selectField: []
       }
     ]
   }

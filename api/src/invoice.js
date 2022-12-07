@@ -1,11 +1,14 @@
 const { Op, literal } = require('sequelize');
 const { now } = require('sequelize/lib/utils');
 const model = require('../models');
-const { bank, invoice, userInvoice } = model;
+const { bank, invoice, userInvoice, recurringBill } = model;
 const myFilter = require('./utils/filter');
-const mergeInvoicesAndUser = require('./utils/mergeInvoicesAndUser');
+const { mergeInvoicesAndUser } = require('./utils/mergeInvoicesAndUser');
+const createInvoiceFromRecurringBill = require('./utils/createInvoiceFromRecurringBill');
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * All information about an invoice
@@ -72,13 +75,13 @@ const router = require('express').Router();
  * @return {array<invoiceAnswer>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/all', async (req, res) => {
+router.get('/all', ensureLoggedIn, async (req, res) => {
   try {
     const invoices = await invoice.findAll({
       include: [{
         model: userInvoice,
         where: {
-          userId: req.query.userId
+          userId: req.session.passport.user.id
         }
       }] 
     });
@@ -99,7 +102,7 @@ router.get('/all', async (req, res) => {
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', ensureLoggedIn, async (req, res) => {
   try {
     const invoiceFind = await invoice.findByPk(req.params.id);
     if(invoiceFind){
@@ -126,20 +129,21 @@ router.get('/:id', async (req, res) => {
  * @return {createInvoice} 201 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.post('/', async (req, res) => {
+router.post('/', ensureLoggedIn, async (req, res) => {
   try {
-    const newUserInvoices = req.body.userInvoices;
-    delete req.body.userInvoices;
-    delete req.body.userId;
-    if (req.body.companyId === 0) {
-      delete req.body.companyId;
-    }
-    const newInvoice = await invoice.create({...req.body});
-    for (const newUserInvoice of newUserInvoices) {
-      newUserInvoice.invoiceId = newInvoice.dataValues.id;
-      await userInvoice.create({...newUserInvoice});
-    }
-    res.status(201).send({id: newInvoice.dataValues.id, message: 'Invoice created successfully'});
+    await model.sequelize.transaction(async (t) => {
+      const newUserInvoices = req.body.userInvoices;
+      delete req.body.userInvoices;
+      if (req.body.companyId === 0) {
+        delete req.body.companyId;
+      }
+      const newInvoice = await invoice.create({...req.body}, { transaction: t });
+      for (const newUserInvoice of newUserInvoices) {
+        newUserInvoice.invoiceId = newInvoice.dataValues.id;
+        await userInvoice.create({...newUserInvoice}, { transaction: t });
+      }
+      res.status(201).send({id: newInvoice.dataValues.id, message: 'Invoice created successfully'});
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -148,20 +152,20 @@ router.post('/', async (req, res) => {
 
 /**
  * POST /invoice/filter
- * @summary Create a new invoice 
+ * @summary Filter invoices
  * @tags invoice
  * @param {fieldsFilterInvoice} request.body.require
  * @return {array<invoiceAnswer} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
- router.post('/filter', async (req, res) => {
+ router.post('/filter', ensureLoggedIn, async (req, res) => {
   try {
     const fieldsFilter = req.body;
     const invoices = await invoice.findAll({
       include: [{
         model: userInvoice,
         where: {
-          userId: req.query.userId
+          userId: req.session.passport.user.id
         }
       }] 
     });
@@ -183,29 +187,31 @@ router.post('/', async (req, res) => {
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureLoggedIn, async (req, res) => {
   try {
-    const listLinkUserInvoices = req.body.listLinkUserInvoices;
-    delete req.body.listLinkUserInvoices;
-    delete req.body.userId;
-    if (req.body.companyId === 0) {
-      delete req.body.companyId;
-    }
-    if (req.body) {
-      await invoice.update(req.body, {where: {id: req.params.id}});
-    }
-    if (listLinkUserInvoices && listLinkUserInvoices.length > 0) {
-      for (const linkUserInvoice of listLinkUserInvoices) {
-        await userInvoice.update(linkUserInvoice, {where: {[Op.and]: {id: linkUserInvoice.id, invoiceId: req.params.id}}});
+    await model.sequelize.transaction(async (t) => {
+      const listLinkUserInvoices = req.body.listLinkUserInvoices;
+      delete req.body.listLinkUserInvoices;
+      if (req.body.companyId === 0) {
+        delete req.body.companyId;
       }
-    }
-    res.sendStatus(204);
+      if (req.body) {
+        await invoice.update(req.body, {where: {id: req.params.id}, transaction: t});
+      }
+      if (listLinkUserInvoices && listLinkUserInvoices.length > 0) {
+        for (const linkUserInvoice of listLinkUserInvoices) {
+          await userInvoice.update(linkUserInvoice, {where: {[Op.and]: {id: linkUserInvoice.id, invoiceId: req.params.id}}, transaction: t});
+        }
+      }
+      res.sendStatus(204);
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
   }
 });
 
+// @todo call create next invoice if link with recurring bill
 /**
  * PATCH /invoice/{invoiceId}/{userId}
  * @summary The user paid it's part
@@ -218,50 +224,71 @@ router.put('/:id', async (req, res) => {
  */
  router.patch('/:invoiceId/:userId', async (req, res) => {
   try {
-    
-    let paymentDate = now();
-    let operation = req.body.amount <= 0 ? 'amount + ' + req.body.amount.substring(1) : 'amount - ' + req.body.amount;
-    if (req.body.invalidate) {
-      paymentDate = null;
-      operation = req.body.amount <= 0 ? 'amount - ' + req.body.amount.substring(1) : 'amount + ' + req.body.amount;
-    }
-    await bank.update(
-      {
-        amount: literal(operation)
-      }, 
-      {
-        where: {
-          userId: req.params.userId
-        },
-        limit : 1
+    await model.sequelize.transaction(async (t) => {
+      let paymentDate = now();
+      let operation = req.body.amount <= 0 ? 'amount + ' + req.body.amount.substring(1) : 'amount - ' + req.body.amount;
+      if (req.body.invalidate) {
+        paymentDate = null;
+        operation = req.body.amount <= 0 ? 'amount - ' + req.body.amount.substring(1) : 'amount + ' + req.body.amount;
       }
-    )
-    await userInvoice.update(
-      {
-        paymentDate: paymentDate
-      }, 
-      {
+      await bank.update(
+        {
+          amount: literal(operation)
+        }, 
+        {
+          where: {
+            userId: req.params.userId
+          },
+          limit : 1,
+          transaction: t 
+        }
+      )
+      await userInvoice.update(
+        {
+          paymentDate: paymentDate
+        }, 
+        {
+          where: {
+            [Op.and]: {
+              invoiceId: req.params.invoiceId,
+              userId: req.params.userId
+            }
+          }, 
+          transaction: t 
+        }
+      );
+      const isPayer = await userInvoice.findOne({
         where: {
           [Op.and]: {
             invoiceId: req.params.invoiceId,
-            userId: req.params.userId
+            userId: req.params.userId,
+            isPayer: true
           }
         }
-      }
-    );
-    const isPayer = await userInvoice.findOne({
-      where: {
-        [Op.and]: {
-          invoiceId: req.params.invoiceId,
-          userId: req.params.userId,
-          isPayer: true
+      })
+      if (isPayer) {
+        await invoice.update(
+          {
+            paymentDate: paymentDate
+          }, 
+          {
+            where: {
+              id: req.params.invoiceId
+            }, 
+            transaction: t
+          }
+        );
+        const currentInvoice = await invoice.findByPk(req.params.invoiceId, {
+          attributes: ['recurringBillId']
+        })
+        const recurringBillId = currentInvoice.dataValues.recurringBillId;
+        if (recurringBillId) {
+          const currentRecurringBill = await recurringBill.findByPk(recurringBillId);
+          createInvoiceFromRecurringBill(currentRecurringBill, t);
         }
       }
-    })
-    if (isPayer) {
-      await invoice.update({paymentDate: paymentDate}, {where: {id: req.params.invoiceId}});
-    }
-    res.sendStatus(204);
+      res.sendStatus(204);
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({message: 'Could not perform operation at this time, kindly try again later.'});
@@ -276,7 +303,7 @@ router.put('/:id', async (req, res) => {
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureLoggedIn, async (req, res) => {
   try {
     await invoice.destroy({where: {id: req.params.id}});
     res.sendStatus(204);

@@ -1,4 +1,8 @@
 'use strict';
+const crypto = require('crypto');
+
+const saltJohn = crypto.randomBytes(16);
+const saltAlice = crypto.randomBytes(16);
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -10,6 +14,8 @@ module.exports = {
         email: 'johndoe@billsgate.com',
         gender: "M",
         external: false,
+        hashed_password: crypto.pbkdf2Sync('john', saltJohn, 310000, 32, 'sha256'),
+        salt: saltJohn,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -20,6 +26,8 @@ module.exports = {
         email: 'AliceBob@billsgate.com',
         gender: "F",
         external: false,
+        hashed_password: crypto.pbkdf2Sync('alice', saltAlice, 310000, 32, 'sha256'),
+        salt: saltAlice,
         createdAt: new Date(),
         updatedAt: new Date()
       }

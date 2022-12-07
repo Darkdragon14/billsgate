@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,28 +12,21 @@ import Checkbox from '@mui/material/Checkbox';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { createTheme } from '@mui/material/styles';
-import ChangeUser from './ChangeUser';
+import { deleteCookie } from '../utils/cookieManager';
+import api from '../utils/api';
 
 export default function MyAvatar(props) {
-  const { user, users, theme, setUser, setTheme } = props;
-  const [openChangeUse, setOpenChangeUser] = React.useState(false);
+  const { user, setUser, theme, setTheme } = props;
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+    if (user) {
+      setAnchorElUser(event.currentTarget);
+    }
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleOpenChangeUser = () => {
-    setOpenChangeUser(true);
-  };
-
-  const handleCloseChangeUser = () => {
-    setAnchorElUser(null);
-    setOpenChangeUser(false);
   };
 
   const handleChangeThemeMode = () => {
@@ -43,6 +37,16 @@ export default function MyAvatar(props) {
     });
     localStorage.setItem('themeMode', theme.palette.mode === 'dark' ? 'light' : 'dark');
     setTheme(newTheme);
+  }
+
+  const logout = () => {
+    deleteCookie('user');
+    api('post', '/auth/logout').then(() => {
+      setUser(null);
+      handleCloseUserMenu();
+    }).catch(err => {
+      console.error(err);
+    });;
   }
 
   return (
@@ -72,14 +76,9 @@ export default function MyAvatar(props) {
           <Typography textAlign="center">{user ? user.username : ""}</Typography>
         </MenuItem>
         <Divider />
-        <MenuItem>
-          <Typography onClick={handleOpenChangeUser} textAlign="center">User's switch</Typography>
-          <ChangeUser 
-            open={openChangeUse}
-            onClose={handleCloseChangeUser}
-            users={users}
-            setUser={setUser}
-          />
+        <MenuItem onClick={logout}>
+          <LogoutIcon />
+          <Typography textAlign="center">Logout</Typography>
         </MenuItem>
         <MenuItem>
           Mode : 

@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       user.hasMany(models.userInvoice, {
         foreignKey: 'userId'
       });
+      user.hasMany(models.userRecurringBill, {
+        foreignKey: 'userId'
+      });
     }
   };
   user.init({
@@ -25,7 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     lastname: DataTypes.STRING,
     email: DataTypes.STRING,
     gender: DataTypes.STRING,
-    external: DataTypes.BOOLEAN
+    external: DataTypes.BOOLEAN,
+    hashed_password: DataTypes.BLOB,
+    salt: DataTypes.BLOB
   }, {
     sequelize,
     modelName: 'user',

@@ -2,6 +2,8 @@ const model = require('../models');
 const { user } = model;
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * All information for an user
@@ -48,9 +50,9 @@ const router = require('express').Router();
  * @return {array<userAnswer>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/all', async (req, res) => {
+router.get('/all', ensureLoggedIn, async (req, res) => {
   try {
-    const users = await user.findAll();
+    const users = await user.findAll({attributes: ['id', 'username']});
     res.status(200).send(users);
   } catch (error) {
     console.error(error);
@@ -59,7 +61,7 @@ router.get('/all', async (req, res) => {
 })
 
 /**
- * GET /user/{userId}
+ * GET /user/
  * @summary Return a specific user
  * @tags user
  * @param {integer} userId.path.required - The user's is 
@@ -67,9 +69,9 @@ router.get('/all', async (req, res) => {
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/:id', async (req, res) => {
+router.get('/', ensureLoggedIn, async (req, res) => {
   try {
-    const userFind = await user.findByPk(req.params.id);
+    const userFind = await user.findByPk(req.session.passport.user.id);
     if(userFind){
       res.status(200).send(userFind);
     } else {
@@ -104,17 +106,16 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * PUT /user/{userId}
+ * PUT /user/
  * @summary Update a specific user
  * @tags user
- * @param {integer} userId.path.required - The user's id 
  * @param {user} request.body.required - The new username of this user
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.put('/:id', async (req, res) => {
+router.put('/', async (req, res) => {
   try {
-    await user.update({...req.body}, {where: {id: req.params.id}});
+    await user.update({...req.body}, {where: {id: req.session.passport.user.id}});
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
@@ -123,16 +124,15 @@ router.put('/:id', async (req, res) => {
 })
 
 /**
-* DELETE /user/{userId}
+* DELETE /user/
 * @summary Delete a specific user
 * @tags user
-* @param {integer} userId.path.required - The user's is 
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/', async (req, res) => {
   try {
-    await user.destroy({where: {id: req.params.id}});
+    await user.destroy({where: {id: req.session.passport.user.id}});
     res.sendStatus(204);
   } catch (error) {
     console.error(error);

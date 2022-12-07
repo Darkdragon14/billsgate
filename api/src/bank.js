@@ -107,6 +107,9 @@ const router = require('express').Router();
  */
  router.post('/', async (req, res) => {
   try {
+    if (req.body.companyId === 0) {
+      delete req.body.companyId;
+    }
     const newBank = await bank.create({...req.body});
     res.status(201).send({id: newBank.dataValues.id, message: 'bank created successfully'});
   } catch (error) {
@@ -126,6 +129,9 @@ const router = require('express').Router();
  */
  router.put('/:id', async (req, res) => {
   try {
+    if (req.body.companyId === 0) {
+      delete req.body.companyId;
+    }
     await bank.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
   } catch (error) {

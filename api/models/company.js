@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       company.hasMany(models.bank, {
         foreignKey: 'companyId'
       });
+      company.hasMany(models.recurringBill, {
+        foreignKey: 'companyId'
+      });
     }
   };
   company.init({

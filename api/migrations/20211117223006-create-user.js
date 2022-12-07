@@ -34,6 +34,16 @@ module.exports = {
         defaultValue: false,
         allowNull: false
       },
+      hashed_password: {
+        type: Sequelize.BLOB,
+        defaultValue: false,
+        allowNull: false
+      },
+      salt: {
+        type: Sequelize.BLOB,
+        defaultValue: false,
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

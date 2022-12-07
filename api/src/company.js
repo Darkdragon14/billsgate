@@ -2,6 +2,8 @@ const model = require('../models');
 const { company } = model;
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * All information for a company
@@ -90,7 +92,7 @@ router.get('/:id', async (req, res) => {
  * @return {error} 409 - The name is already used - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.post('/', async (req, res) => {
+router.post('/', ensureLoggedIn, async (req, res) => {
   try {
     const newCompany = await company.create({...req.body});
     res.status(201).send({id: newCompany.dataValues.id, message: 'Company created successfully'});
@@ -112,7 +114,7 @@ router.post('/', async (req, res) => {
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureLoggedIn, async (req, res) => {
   try {
     await company.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
@@ -130,7 +132,7 @@ router.put('/:id', async (req, res) => {
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureLoggedIn, async (req, res) => {
   try {
     await company.destroy({where: {id: req.params.id}});
     res.sendStatus(204);

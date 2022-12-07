@@ -1,6 +1,3 @@
-const model = require('../../models');
-const { invoice, userInvoice } = model;
-
 /**
  * 
  * @param {array<invoice>} invoices 
@@ -18,4 +15,25 @@ function mergeInvoicesAndUser(invoices) {
   });
 }
 
-module.exports = mergeInvoicesAndUser;
+/**
+ * 
+ * @param {array<recurringBill>} recurringBills 
+ * @param {integer} currentUserId
+ * @return {array<object>}
+ */
+ function mergeRecurringBillAndUser(recurringBills, currentUserId) {
+  return recurringBills.map(recurringBill => {
+    let isPayer = false;
+    recurringBill.dataValues.userRecurringBills.forEach(user => {
+      if(user.id === currentUserId){
+        isPayer = !isPayer;
+      }
+    });
+    recurringBill.dataValues.isPayer = isPayer;
+    delete recurringBill.dataValues.userRecurringBills
+    return recurringBill;
+  });
+}
+
+module.exports.mergeInvoicesAndUser = mergeInvoicesAndUser;
+module.exports.mergeRecurringBillAndUser = mergeRecurringBillAndUser;

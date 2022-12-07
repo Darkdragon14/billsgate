@@ -28,11 +28,7 @@ export default function Invoices(props) {
         path = 'invoice/filter'
         method = 'post'
       }
-      api(method, path, [], {userId: user.id}, filter).then(invoices => {
-        invoices.data.forEach(invoice => {
-          invoice.totalAmount = invoice.amount.toFixed(2);
-          invoice.dueAmount = (invoice.amount * invoice.weight).toFixed(2);
-        });
+      api(method, path, [], filter).then(invoices => {
         setRows(invoices.data);
       }).catch(err => {
         console.error(err);

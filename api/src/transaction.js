@@ -2,6 +2,8 @@ const model = require('../models');
 const { transaction, bank, invoice } = model;
 
 const router = require('express').Router();
+const ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
+const ensureLoggedIn = ensureLogIn();
 
 /**
  * All information for a transaction
@@ -44,12 +46,12 @@ const router = require('express').Router();
  * @return {array<transactionAnswer>} 200 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/all', async (req, res) => {
+router.get('/all', ensureLoggedIn, async (req, res) => {
   try {
     const transactions = await transaction.findAll({
       where: {
         [Op.or]: {
-          userId: req.query.userId,
+          userId: req.session.passport.user.id,
           bankFromId: req.query.bankId,
           bankToId: req.query.bankId
         }
@@ -72,7 +74,7 @@ router.get('/all', async (req, res) => {
  * @return {error} 404 - User not found - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', ensureLoggedIn, async (req, res) => {
   try {
     const userFind = await user.findByPk(req.params.id);
     if(userFind){
@@ -95,7 +97,7 @@ router.get('/:id', async (req, res) => {
  * @return {createTransaction} 201 - success response - application/json
  * @return {error} 500 - The server failed - application/json
  */
-router.post('/', async (req, res) => {
+router.post('/', ensureLoggedIn, async (req, res) => {
   try {
     const newTransaction = await transaction.create({...req.body});
     res.status(201).send({id: newTransaction.dataValues.id, message: 'Transaction created successfully'});
@@ -114,7 +116,7 @@ router.post('/', async (req, res) => {
  * @return 204 - success response
  * @return {error} 500 - The server failed - application/json
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureLoggedIn, async (req, res) => {
   try {
     await transaction.update({...req.body}, {where: {id: req.params.id}});
     res.sendStatus(204);
@@ -132,7 +134,7 @@ router.put('/:id', async (req, res) => {
 * @return 204 - success response - application/json
 * @return {error} 500 - The server failed - application/json
 */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureLoggedIn, async (req, res) => {
   try {
     await transaction.destroy({where: {id: req.params.id}});
     res.sendStatus(204);

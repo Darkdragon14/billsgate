@@ -26,12 +26,17 @@
   "author": "Sinoquet Tristan",
   "license": "ISC",
   "dependencies": {
+    "connect-ensure-login": "^0.1.1",
     "cors": "^2.8.5",
     "dayjs": "^1.10.7",
     "express": "^4.17.1",
     "express-jsdoc-swagger": "^1.6.7",
+    "express-session": "^1.17.3",
+    "mariadb": "^3.0.0",
     "mysql2": "^2.3.3",
-    "sequelize": "^6.9.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.19.2",
     "sequelize-cli": "^6.3.0"
   },
   "devDependencies": {

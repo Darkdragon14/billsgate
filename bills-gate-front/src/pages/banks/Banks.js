@@ -88,6 +88,8 @@ export default function Banks(props) {
         title="Banks" 
         rows={rows}
         columns={FieldsTableBank}
+        FieldToWarning='amount'
+        FieldToError='amount'
         handleEdit={handleEditBank}
         handleDelete={handleDeleteBank}
       />

@@ -5,7 +5,7 @@ import Link from '@mui/material/Link';
 import dayjs from 'dayjs';
 
 export default function Cell(props) {
-    const { columnType, data } = props;
+    const { columnType, data, color } = props;
     const [value, setValue] = React.useState(null)
 
     React.useEffect(() => {
@@ -34,7 +34,12 @@ export default function Cell(props) {
     }, [columnType, data]);
 
     return (
-        <TableCell align="center">
+        <TableCell 
+            sx={{
+                color
+            }}
+            align="center"
+        >
             {value}
         </TableCell>
     );

@@ -153,6 +153,8 @@ export default function Invoices(props) {
         rows={rows}
         columns={FieldsTableInvoice}
         FieldToValidate="paymentDateUser"
+        FieldToWarning='dueDate'
+        FieldToError='dueDate'
         fieldsFilter={fieldsFilter}
         handleSetFieldsFilter={handleSetFieldsFilter}
         handleResetFieldsFilter={handleResetFieldsFilter}

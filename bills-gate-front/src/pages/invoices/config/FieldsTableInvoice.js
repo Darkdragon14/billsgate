@@ -17,7 +17,9 @@ const FieldsTableInvoice = [
     {
       id: 'dueDate',
       label: 'Due Date',
-      type: 'date'
+      type: 'date',
+      warning: 10,
+      error: 0
     },
     {
       id: 'paymentDateUser',
